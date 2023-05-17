@@ -87,11 +87,11 @@ export class PassGenerate {
                     renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
                 }
                 // renderShader.shaderState.cullMode = material.getShader().cullMode;
-                if (material.getShader().cullMode == `none`) {
+                if (material.cullMode == `none`) {
                     renderShader.shaderState.cullMode = `none`;
-                } else if (material.getShader().cullMode == `back`) {
+                } else if (material.cullMode == `back`) {
                     renderShader.shaderState.cullMode = `front`;
-                } else if (material.getShader().cullMode == `front`) {
+                } else if (material.cullMode == `front`) {
                     renderShader.shaderState.cullMode = `back`;
                 }
                 renderShader.preCompile(renderNode.geometry);
@@ -173,7 +173,7 @@ export class PassGenerate {
     public static createDepthPass(renderNode: RenderNode, material: MaterialBase) {
         let depthMaterialPass = material.renderShader.getPassShader(RendererType.DEPTH);
         if (!depthMaterialPass) {
-            let depthMaterialPass = new DepthMaterialPass();
+            depthMaterialPass = new DepthMaterialPass();
             let baseMat = renderNode.materials[0];
             depthMaterialPass.baseMap = baseMat.baseMap;
             let useTangent = renderNode.geometry.hasAttribute('TANGENT');

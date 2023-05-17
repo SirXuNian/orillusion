@@ -40,39 +40,36 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
             //     shadowStrut.directShadowVisibility[shadowIndex] = 2.0 ;
             //     continue;
             // }
-            if (varying_shadowUV.x <= 1.0 && varying_shadowUV.x >= 0.0 && varying_shadowUV.y <= 1.0 && varying_shadowUV.y >= 0.0 && shadowPosTmp.z <= 1.0) {
+            // if (varying_shadowUV.x <= 1.0 && varying_shadowUV.x >= 0.0 && varying_shadowUV.y <= 1.0 && varying_shadowUV.y >= 0.0 && shadowPosTmp.z <= 1.0) {
               var texelSize = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
               var oneOverShadowDepthTextureSize = texelSize;
               var size = 1;
               var sizeBlock = size * 2 + 1;
               var sizeBlockA = sizeBlock * sizeBlock;
               var visibility = 0.0;
-              for (var y = -size; y <= size; y++) {
-                for (var x = -size; x <= size; x++) {
-                  var offset = vec2<f32>(f32(x), f32(y)) * oneOverShadowDepthTextureSize / f32(sizeBlock);
+              // for (var y = -size; y <= size; y++) {
+              //   for (var x = -size; x <= size; x++) {
+                  // var offset = vec2<f32>(f32(x), f32(y)) * oneOverShadowDepthTextureSize / f32(sizeBlock);
                   visibility += textureSampleCompare(
                     shadowMap,
                     shadowMapSampler,
-                    varying_shadowUV + offset,
+                    // varying_shadowUV + offset,
+                    varying_shadowUV ,
                     shadowIndex,
                     shadowPos.z - bias
                   );
-                }
-              }
-              visibility /= f32(sizeBlockA);
+              //   }
+              // }
+              // visibility /= f32(sizeBlockA);
               shadowStrut.directShadowVisibility[shadowIndex] = visibility + 0.001;
-            }
+            // }
           #endif
       }
     }
 
-            fn pointShadowMapCompare(shadowBias: f32){
+    fn pointShadowMapCompare(shadowBias: f32){
       let worldPos = ORI_VertexVarying.vWorldPos.xyz;
       let offset = 0.1;
-      // let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
-      // let start = max(lightIndex.start, 0.0);
-      // let count = max(lightIndex.count, 0.0);
-      // let end = max(start + count, 0.0);
 
       for (var i: i32 = shadowBuffer.nPointShadowStart; i < shadowBuffer.nPointShadowEnd ; i = i + 1) {
         let ldx = shadowBuffer.shadowLights[i];

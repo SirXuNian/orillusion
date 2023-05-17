@@ -76,6 +76,7 @@ class Sample_InternalGeometry {
             let box = new Object3D();
             let meshRenderer = box.addComponent(MeshRenderer);
             meshRenderer.geometry = new CylinderGeometry(5, 10, 20, 50, 20);
+            material.cullMode = `none`;
             meshRenderer.material = material;
             box.y = 20;
             box.x = 50;

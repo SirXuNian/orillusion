@@ -58,37 +58,25 @@ export let ZPassShader_vs: string = /*wgsl*/ `
         ${MorphTarget_shader.getMorphTargetAttr(4)}
     #endif
     ) -> VertexOutput {
-    worldMatrix = models.matrix[index];
+        worldMatrix = models.matrix[index];
 
-    var vertexPosition = position;
-    var vertexNormal = normal;
-    #if USE_MORPHTARGETS
-        ${MorphTarget_shader.getMorphTargetCalcVertex()}
-    #endif
-
-    #if USE_SKELETON
-        #if USE_JOINT_VEC8
-            worldMatrix *= getSkeletonWorldMatrix_8(joints0, weights0, joints1, weights1);
-        #else
-            worldMatrix *= getSkeletonWorldMatrix_4(joints0, weights0);
+        var vertexPosition = position;
+        var vertexNormal = normal;
+        #if USE_MORPHTARGETS
+            ${MorphTarget_shader.getMorphTargetCalcVertex()}
         #endif
-    #endif
 
+        #if USE_SKELETON
+            #if USE_JOINT_VEC8
+                worldMatrix *= getSkeletonWorldMatrix_8(joints0, weights0, joints1, weights1);
+            #else
+                worldMatrix *= getSkeletonWorldMatrix_4(joints0, weights0);
+            #endif
+        #endif
         
-        let wPos = worldMatrix * vec4<f32>(vertexPosition.xyz, 1.0);
-        var fixProjMat = globalUniform.projMat ;
-        // fixProjMat[2].z = -1.0 ;//99999.0 / (99999.0 - 1.0) ;
-        // fixProjMat[3].z = 0.0 ;//(-1.0 * 99999.0) / (99999.0 - 1.0) ;
-        var rzMatrix : mat4x4<f32> ;
-        rzMatrix[0] = vec4<f32>(1.0,0.0,0.0,0.0) ; 
-        rzMatrix[1] = vec4<f32>(0.0,1.0,0.0,0.0) ; 
-        rzMatrix[2] = vec4<f32>(0.0,0.0,1.0,0.0) ; 
-        rzMatrix[3] = vec4<f32>(0.0,0.0,0.0,1.0) ; 
-        // rzMatrix[2].z = (-globalUniform.near * globalUniform.far) / (globalUniform.far - globalUniform.near) ;
-        // rzMatrix[3].z = globalUniform.far / (globalUniform.far - globalUniform.near) ;
-        var clipPos:vec4<f32> = fixProjMat * globalUniform.viewMat * rzMatrix * wPos ;
-        // clipPos.z = clipPos.z + (clipPos.z / clipPos.w + globalUniform.near / clipPos.w + 0.002 / clipPos.w) * (globalUniform.near / globalUniform.far) ; 
-        // clipPos.z = depthToLinear01(clipPos.z / clipPos.w) ; 
+        let wPos = worldMatrix * vec4<f32>(vertexPosition.xyz, 1.0f);
+        var clipPos:vec4<f32> =  globalUniform.projMat * globalUniform.viewMat * wPos ;
+        clipPos.z = depthToLinear01(clipPos.z / clipPos.w) ; 
         return VertexOutput(f32(index) , wPos.xyz, clipPos);
     }
 

@@ -26,7 +26,7 @@ export class WebGPUDescriptorCreator {
         rps.depthLoadOp = rtFrame.depthLoadOp;
         if (rtFrame && rtFrame.attachments.length > 0) {
             rps.renderTargets = rtFrame.attachments;
-            rps.rtTextureDescripts = rtFrame.rtDescriptors;
+            rps.rtTextureDescriptors = rtFrame.rtDescriptors;
 
             rps.renderPassDescriptor = WebGPUDescriptorCreator.getRenderPassDescriptor(rps);
             rps.renderBundleEncoderDescriptor = WebGPUDescriptorCreator.getRenderBundleDescriptor(rps);
@@ -74,7 +74,7 @@ export class WebGPUDescriptorCreator {
             size = [renderPassState.renderTargets[0].width, renderPassState.renderTargets[0].height];
             for (let i = 0; i < renderPassState.renderTargets.length; i++) {
                 const texture = renderPassState.renderTargets[i];
-                const rtDesc = renderPassState.rtTextureDescripts[i];
+                const rtDesc = renderPassState.rtTextureDescriptors[i];
                 attachMentTexture.push({
                     view: texture.getGPUView(),
                     resolveTarget: undefined,

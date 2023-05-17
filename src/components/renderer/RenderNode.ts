@@ -240,7 +240,6 @@ export class RenderNode extends ComponentBase {
     public set castReflection(value: boolean) {
         this._castReflection = value;
     }
-
     public renderPass(view: View3D, passType: RendererType, renderContext: RenderContext) {
         let renderNode = this;
         let worldMatrix = renderNode.transform._worldMatrix;
@@ -366,7 +365,6 @@ export class RenderNode extends ComponentBase {
     }
 
     public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
-
         let node = this;
         for (let i = 0; i < this.materials.length; i++) {
             let material = this.materials[i];
@@ -374,23 +372,17 @@ export class RenderNode extends ComponentBase {
             if (passes) {
                 for (let i = 0; i < passes.length; i++) {
                     const pass = passes[i];
-                    // RenderShader.getShader(passes[i].shaderID);
                     const renderShader = pass.renderShader;
-                    // RenderShader.getShader(passes[i].shaderID);
                     if (renderShader.shaderState.splitTexture) {
                         let splitTexture = RTResourceMap.CreateSplitTexture(this.instanceID);
                         renderShader.setTexture("splitTexture_Map", splitTexture);
                     }
-                    // renderShader.setUniformVector3("center", this.transform.worldPosition);
-                    // if(scene3D.envMapChange){
                     if (!this._ignoreEnvMap) {
                         renderShader.setTexture(`envMap`, view.scene.envMap);
                     }
                     if (!this._ignorePrefilterMap) {
                         renderShader.setTexture(`prefilterMap`, view.scene.envMap);
                     }
-                    // }
-
                     if (renderShader.pipeline) {
                         renderShader.apply(this._geometry, pass, renderPassState, () => this.noticeShaderChange());
                         continue;
@@ -398,19 +390,16 @@ export class RenderNode extends ComponentBase {
 
                     let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
                     renderShader.setTexture(`brdflutMap`, bdrflutTex);
-
                     let shadowRenderer = Engine3D.getRenderJob(view).shadowMapPassRenderer;
                     if (shadowRenderer && shadowRenderer.depth2DTextureArray) {
                         renderShader.setTexture(`shadowMap`, Engine3D.getRenderJob(view).shadowMapPassRenderer.depth2DTextureArray);
                         renderShader.setStorageBuffer(`shadowBuffer`, ShadowLightsCollect.shadowBuffer.get(view.scene));
                     }
-                    // let shadowLight = ShadowLights.list;
-                    // if (shadowLight.length) {
+
                     let pointShadowRenderer = Engine3D.getRenderJob(view).pointLightShadowRenderer;
                     if (pointShadowRenderer && pointShadowRenderer.cubeTextureArray) {
                         renderShader.setTexture(`pointShadowMap`, pointShadowRenderer.cubeTextureArray);
                     }
-                    // }
 
                     let iesTexture = IESProfiles.iesTexture;
                     if (iesTexture) {

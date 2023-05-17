@@ -20,10 +20,9 @@ export class DepthMaterialPass extends MaterialBase {
         ShaderLib.register("ZPass_shader_vs", ZPassShader_vs);
         ShaderLib.register("ZPass_shader_fs", ZPassShader_fs);
 
-        // let shader = this.setShader(`ZPass_shader_vs`,`ZPass_shader_fs`);
         let shader = this.setShader(`ZPass_shader_vs`, `ZPass_shader_fs`);
-        shader.useRz = true;
-        // shader.setShaderEntry("main");
+        // shader.useRz = true;
+        shader.setShaderEntry("main");
 
         let shaderState = shader.shaderState;
         shaderState.receiveEnv = false;

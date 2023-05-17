@@ -53,16 +53,6 @@ export class OcclusionSystem {
         cameraViewRenderList.clear();
 
         let nodes = EntityCollect.instance.getRenderNodes(scene);
-        // for (let i = 0; i < nodes.opaqueList.length; i++) {
-        //     const node = nodes.opaqueList[i];
-        //     if(node.object3D.transform[`_localChange`])
-        //         node.object3D.transform.updateWorldMatrix();
-        // }
-        // for (let i = 0; i < nodes.transparentList.length; i++) {
-        //     const node = nodes.transparentList[i];
-        //     if(node.object3D.transform[`_localChange`])
-        //         node.object3D.transform.updateWorldMatrix();
-        // }
 
         for (let i = 0; i < nodes.opaqueList.length; i++) {
             const node = nodes.opaqueList[i];

@@ -250,7 +250,6 @@ export class RenderShader extends ShaderBase {
         return this._passShaderCache.get(rendererType);
     }
 
-
     /**
      * Sets the entry point names for the RenderShader vertex phase and fragment phase
      * @param vsEntryPoint 

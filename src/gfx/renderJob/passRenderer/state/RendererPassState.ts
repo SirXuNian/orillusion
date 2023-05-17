@@ -18,7 +18,7 @@ export class RendererPassState {
     public outAttachments: GPUColorTargetState[];
     public outColor: number = -1;
     public renderTargets: Texture[];
-    public rtTextureDescripts: RTDescriptor[];
+    public rtTextureDescriptors: RTDescriptor[];
     // public depthFormat: GPUTextureFormat = 'depth24plus';
     // public depthFormat: GPUTextureFormat = 'depth32float';
     // public depthTexture: GPUTexture;
