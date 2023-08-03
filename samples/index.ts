@@ -22,6 +22,7 @@
 
 
 
+
     // change sessionStorage.target on click, and reload iframe
     menu.addEventListener('click', (e: Event) => {
         const button = e.target as HTMLElement
@@ -70,3 +71,8 @@
         document.body.appendChild(iframe)
     }
 }
+
+
+// import { Sample_Grass } from "./ext/Sample_Grass";
+// console.log("a");
+// new Sample_Grass().run();

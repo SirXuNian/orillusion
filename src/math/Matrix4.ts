@@ -24,12 +24,17 @@ export class Matrix4 {
     /**
      * matrix do total count 
      */
-    public static allocCount: number = 400000;
+    public static allocCount: number = 100000;
+
+    /**
+     * matrix do total count 
+     */
+    public static allocOnceCount: number = 0;
 
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 400000;
+    public static maxCount: number = 100000;
 
     /**
      * current matrix use count 
@@ -320,7 +325,7 @@ export class Matrix4 {
     constructor(doMatrix: boolean = false) {
         // if (doMatrix) {
         if (Matrix4.useCount >= Matrix4.allocCount) {
-            Matrix4.allocMatrix(Matrix4.allocCount + 200000);
+            Matrix4.allocMatrix(Matrix4.allocCount + Matrix4.allocOnceCount);
         }
 
         this.index = Matrix4.useCount;
