@@ -285,6 +285,9 @@ export class Engine3D {
             materialChannelDebug: false,
             materialDebug: false
         },
+        loader: {
+            numConcurrent: 20,
+        }
     };
 
 
