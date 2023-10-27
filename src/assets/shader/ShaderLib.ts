@@ -27,7 +27,7 @@ import { Irradiance_frag } from './lighting/Irradiance_frag';
 import { BRDF_frag } from './lighting/BRDF_frag';
 import { BxDF_frag } from './lighting/BxDF_frag';
 import { Clearcoat_frag } from './materials/program/Clearcoat_frag';
-import { LitShader } from './materials/LitShader';
+import { LitShaderStr } from './materials/LitShader';
 import { PBRLItShader } from './materials/PBRLItShader';
 import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
 import { Quad_depth2d_frag_wgsl, Quad_depthCube_frag_wgsl, Quad_frag_wgsl, Quad_vert_wgsl } from './quad/Quad_shader';
@@ -81,7 +81,7 @@ export class ShaderLib {
         ShaderLib.register('UnLit_frag', UnLit_frag);
         ShaderLib.register('UnLit', UnLit);
         ShaderLib.register('Clearcoat_frag', Clearcoat_frag);
-        ShaderLib.register('LitShader', LitShader);
+        ShaderLib.register('LitShader', LitShaderStr);
         ShaderLib.register('PBRLItShader', PBRLItShader);
 
         ShaderLib.register('ClusterDebug_frag', ClusterDebug_frag);
