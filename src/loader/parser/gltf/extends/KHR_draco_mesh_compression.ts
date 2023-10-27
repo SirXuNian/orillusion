@@ -158,6 +158,7 @@ function dracoDecoderWoeker() {
                             result
                         });
                     } catch (error) {
+                        console.error(error);
                         self.postMessage({
                             type: 'error',
                             error: error.message

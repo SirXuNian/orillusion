@@ -116,6 +116,7 @@ export class B3DMParseUtil {
             try {
                 info = extensions[EXTENSIONS.KHR_BINARY_GLTF] = new GLTFBinaryExtension(this._binary);
             } catch (error) {
+                console.error(error);
                 // if ( onError ) onError( error );
                 return;
             }

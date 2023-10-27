@@ -88,7 +88,7 @@ export class B3DMLoader extends B3DMLoaderBase {
             return decodeURIComponent(escape(s));
 
         } catch (e) { // see #16358
-
+            console.error(e);
             return s;
 
         }

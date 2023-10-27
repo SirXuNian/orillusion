@@ -37,7 +37,7 @@ export class CEventDispatcher {
                         listener.handler.call(listener.thisObject, event);
                     } catch (error) {
                         // if (window.//console) {
-                        //console.error(error.stack);
+                        console.error(error);
                         // }
                     }
                     if (event.isStopImmediatePropagation) {
