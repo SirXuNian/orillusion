@@ -314,7 +314,7 @@ export class RenderNode extends ComponentBase {
         }
     }
 
-    @EditorInspector
+    // @EditorInspector
     public get castShadow(): boolean {
         return this._castShadow;
     }
@@ -324,7 +324,7 @@ export class RenderNode extends ComponentBase {
         this._castShadow = value;
     }
 
-    @EditorInspector
+    // @EditorInspector
     public get castGI(): boolean {
         return this._castGI;
     }

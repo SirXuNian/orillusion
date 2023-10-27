@@ -109,7 +109,10 @@ export class GrassGeometry extends GeometryBase {
             indexStart: 0,
             indexCount: indexes.length,
             vertexStart: 0,
+            vertexCount: 0,
+            firstStart: 0,
             index: 0,
+            topology: 0,
         });
 
         this.bounds = new BoundingBox(Vector3.ZERO, new Vector3(9999, 9999, 9999));

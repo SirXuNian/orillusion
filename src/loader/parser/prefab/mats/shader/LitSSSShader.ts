@@ -1,4 +1,4 @@
-import { GUIUtil } from "@samples/utils/GUIUtil";
+// import { GUIUtil } from "@samples/utils/GUIUtil";
 import { BlendMode, GPUCullMode, PBRLitSSSShader, RegisterComponent, RegisterShader, ShaderLib, ShaderUtil, Texture } from "../../../../..";
 import { Engine3D } from "../../../../../Engine3D";
 import { RenderShader } from "../../../../../gfx/graphics/webGpu/shader/RenderShader";
@@ -7,7 +7,7 @@ import { Vector4 } from "../../../../../math/Vector4";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 
-@RegisterShader
+@RegisterShader(LitSSSShader, 'LitSSSShader')
 export class LitSSSShader extends RenderShader {
 
     constructor() {

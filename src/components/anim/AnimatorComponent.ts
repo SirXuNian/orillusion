@@ -1,11 +1,9 @@
-import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { BoxGeometry, DEGREES_TO_RADIANS, Engine3D, LitMaterial, Matrix4, MeshFilter, MeshRenderer, Object3D, PrefabAvatarData, Quaternion, RenderNode, RendererBase, Skeleton, SkeletonPose, SkinnedMeshRenderer2, StorageGPUBuffer, Time, Vector2, Vector3, Vector4, View3D, makeMatrix44 } from "../..";
 import { PropertyAnimationClip } from "../../math/AnimationCurveClip";
 import { RegisterComponent } from "../../util/SerializeDecoration";
 import { ComponentBase } from "../ComponentBase";
-import { GUIUtil } from "@samples/utils/GUIUtil";
 
-@RegisterComponent
+@RegisterComponent(AnimatorComponent, 'AnimatorComponent')
 export class AnimatorComponent extends ComponentBase {
     public jointMatrixIndexTableBuffer: StorageGPUBuffer;
     public playBlendShapeLoop: boolean = false;

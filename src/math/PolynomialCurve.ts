@@ -1,4 +1,5 @@
-import { AnimationCurve, FrameCache } from './AnimationCurve';
+import { AnimationCurve } from './AnimationCurve';
+import { FrameCache } from './enum/FrameCache';
 import { cubicPolynomialRootsGeneric } from './Polynomials';
 import { Vector2 } from './Vector2';
 

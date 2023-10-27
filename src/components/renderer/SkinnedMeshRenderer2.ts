@@ -15,7 +15,7 @@ import { AnimatorComponent, GeometryBase, Matrix4, RegisterComponent } from "../
  * meshes with mixed shapes, and meshes running cloth simulations.
  * @group Components
  */
-@RegisterComponent
+@RegisterComponent(SkinnedMeshRenderer2, 'SkinnedMeshRenderer2')
 export class SkinnedMeshRenderer2 extends MeshRenderer {
     public skinJointsName: Array<string>;
     protected mInverseBindMatrixData: Array<Float32Array>;

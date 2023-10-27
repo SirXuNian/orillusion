@@ -5,7 +5,7 @@ import { Color } from "../../../../../math/Color";
 import { Vector4 } from "../../../../../math/Vector4";
 
 
-@RegisterShader
+@RegisterShader(LitShader, 'LitShader')
 export class LitShader extends RenderShader {
 
     constructor() {

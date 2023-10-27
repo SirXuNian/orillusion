@@ -14,7 +14,7 @@ import { Material } from '../..';
  * The mesh renderer component is a component used to render the mesh
  * @group Components
  */
-@RegisterComponent
+@RegisterComponent(MeshRenderer, 'MeshRenderer')
 export class MeshRenderer extends RenderNode {
     /**
      * Enabling this option allows the grid to display any shadows cast on the grid.
@@ -48,7 +48,7 @@ export class MeshRenderer extends RenderNode {
     /**
      * The geometry of the mesh determines its shape
      */
-    @EditorInspector
+    // @EditorInspector
     public get geometry(): GeometryBase {
         return this._geometry;
     }
@@ -80,7 +80,7 @@ export class MeshRenderer extends RenderNode {
     /**
      * material
      */
-    @EditorInspector
+    // @EditorInspector
     public get material(): Material {
         return this._materials[0];
     }
