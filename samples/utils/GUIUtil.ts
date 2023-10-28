@@ -1,8 +1,9 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Camera3D, Color, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
+
 
 
     public static renderShadowSetting(open: boolean = true) {
@@ -525,7 +526,6 @@ export class GUIUtil {
 
     }
 
-
     public static renderGTAO(post: GTAOPost) {
         GUIHelp.addFolder("GTAO");
         GUIHelp.add(post, "maxDistance", 0.0, 149, 1);
@@ -534,6 +534,14 @@ export class GUIUtil {
         GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
         GUIHelp.add(post, "blendColor");
         GUIHelp.add(post, "multiBounce");
+        GUIHelp.endFolder();
+    }
+
+    public static renderCamera(camera: Camera3D) {
+        GUIHelp.addFolder("Camera");
+        GUIHelp.add(camera, "near", 0.000001, 10, 0.000001);
+        GUIHelp.add(camera, "far", 10, 100000, 0.1);
+        GUIHelp.add(camera, "fov", 0.1, 90, 0.001);
         GUIHelp.endFolder();
     }
 }

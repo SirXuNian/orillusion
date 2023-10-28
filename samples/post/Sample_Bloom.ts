@@ -5,7 +5,6 @@ import {
 	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, BloomPost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { GUI } from '@orillusion/debug/dat.gui.module';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 class Sample_Bloom {
