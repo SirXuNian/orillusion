@@ -155,4 +155,14 @@ export class LitMaterial extends Material {
     public set ao(value: number) {
         this.shader.setUniform(`ao`, value);
     }
+
+    public get normalScale(): number {
+        return this.shader.getUniform(`normalScale`);
+    }
+
+    public set normalScale(value: number) {
+        this.shader.setUniform(`normalScale`, value);
+    }
+
+
 }

@@ -148,7 +148,8 @@ export let PBRLItShader: string = /*wgsl*/ `
 
 
         var Normal = textureSample(normalMap,normalMapSampler,uv).rgb ;
-        let normal = unPackRGNormal(Normal,1.0,1.0) ;  
+        Normal.y = 1.0 - Normal.y ;
+        let normal = unPackRGNormal(Normal,materialUniform.normalScale,1.0) ;  
         ORI_ShadingInput.Normal = normal ;
 
         BxDFShading();

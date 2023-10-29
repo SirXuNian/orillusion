@@ -14,6 +14,7 @@ export class Sample_earth {
     scene: Scene3D;
 
     async run() {
+        Engine3D.setting.render.debug = true
         Engine3D.setting.shadow.shadowSize = 2048
         Engine3D.setting.shadow.shadowBound = 500;
 
@@ -41,6 +42,7 @@ export class Sample_earth {
         GUIUtil.renderBloom(post, true);
         GUIUtil.renderAtmosphericSky(sky, true);
         GUIUtil.renderCamera(view.camera);
+        GUIUtil.renderDebug();
 
         await this.initScene();
     }
@@ -54,16 +56,26 @@ export class Sample_earth {
             let lc = this.lightObj.addComponent(DirectLight);
             lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             lc.castShadow = true;
-            lc.intensity = 10;
+            lc.intensity = 45
             this.scene.addChild(this.lightObj);
+
+            GUIUtil.renderDirLight(lc);
         }
 
         {
-            let tex = await Engine3D.res.loadTexture("textures/earth/earth_diffuse.jpg") as BitmapTexture2D;
+
+
+
+            let day_tex = await Engine3D.res.loadTexture("textures/earth/8k_earth_daymap.jpg") as BitmapTexture2D;
+            let normal_tex = await Engine3D.res.loadTexture("textures/earth/8k_earth_normal_map.png", null) as BitmapTexture2D;
+            let mask_tex = await Engine3D.res.loadTexture("textures/earth/8k_earth_specular_map.png", null) as BitmapTexture2D;
             let mat = new LitMaterial();
-            mat.roughness = 1.0;
-            mat.metallic = 0.1;
-            mat.baseMap = tex;
+            mat.roughness = 2.0;
+            mat.metallic = 1.0;
+            mat.baseMap = day_tex;
+            mat.normalMap = normal_tex;
+            mat.maskMap = mask_tex;
+            mat.normalScale = 100;
 
             let sphere = new EarthGeometry();
             let earth = new Object3D();

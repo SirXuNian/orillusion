@@ -7,7 +7,7 @@ export class EarthGeometry extends GeometryBase {
     }
 
     private buidGeometry() {
-        let w = 200;
+        let w = 1000;
         let h = 200;
         let sw = w - 1;
         let sh = h - 1;
