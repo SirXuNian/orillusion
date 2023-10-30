@@ -8,6 +8,7 @@ import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUI } from '@orillusion/debug/dat.gui.module';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 import { EarthGeometry } from './EarthGeometry';
+import { EarthCameraController } from './cameraController/EarthCameraController';
 
 export class Sample_earth {
     lightObj: Object3D;
@@ -26,7 +27,7 @@ export class Sample_earth {
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
         mainCamera.perspective(45, webGPUContext.aspect, 0.001, 5000.0);
-        let ctrl = mainCamera.object3D.addComponent(HoverCameraController);
+        let ctrl = mainCamera.object3D.addComponent(EarthCameraController);
         ctrl.setCamera(0, -15, 500);
         // sky.relativeTransform = this.lightObj.transform;
 

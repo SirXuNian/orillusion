@@ -28,18 +28,18 @@ export class EarthGeometry extends GeometryBase {
                 let px = x / sw;
                 let py = y / sh;
 
-                var verAngle: number = (2 * Math.PI * x) / sw;
-                var xx: number = ringRadius * Math.cos(verAngle);
-                var yy: number = ringRadius * Math.sin(verAngle);
-                var normLen: number = 1 / Math.sqrt(xx * xx + yy * yy + zz * zz);
+                // var verAngle: number = (2 * Math.PI * x) / sw;
+                // var xx: number = ringRadius * Math.cos(verAngle);
+                // var yy: number = ringRadius * Math.sin(verAngle);
+                // var normLen: number = 1 / Math.sqrt(xx * xx + yy * yy + zz * zz);
 
-                position_arr[index * 3 + 0] = yy;
-                position_arr[index * 3 + 1] = zz;
-                position_arr[index * 3 + 2] = xx;
+                position_arr[index * 3 + 0] = px * 100;
+                position_arr[index * 3 + 1] = py * 100;
+                position_arr[index * 3 + 2] = 0;
 
-                normal_arr[index * 3 + 0] = yy * normLen;
-                normal_arr[index * 3 + 1] = zz * normLen;
-                normal_arr[index * 3 + 2] = xx * normLen;
+                normal_arr[index * 3 + 0] = 0;
+                normal_arr[index * 3 + 1] = 0;
+                normal_arr[index * 3 + 2] = 1;
 
                 uv_arr[index * 2 + 0] = px;
                 uv_arr[index * 2 + 1] = 1.0 - py;
