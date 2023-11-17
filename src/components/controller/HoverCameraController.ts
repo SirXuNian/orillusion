@@ -90,6 +90,16 @@ export class HoverCameraController extends ComponentBase {
      */
     public pitch: number = 0;
 
+    /**
+     * Pitch angle bottom limit
+     */
+    public bottomClamp: number = 89.99;
+
+    /**
+     * Pitch angle top limit
+     */
+    public topClamp: number = -89.99;
+
     private _currentPos: Object3D;
 
     /**
@@ -101,8 +111,6 @@ export class HoverCameraController extends ComponentBase {
 
     private _mouseLeftDown: boolean = false;
     private _mouseRightDown: boolean = false;
-    private _bottomClamp: number = 89.99;
-    private _topClamp: number = -89.99;
     private _tempDir = new Vector3();
     private _tempPos = new Vector3();
 
@@ -230,7 +238,7 @@ export class HoverCameraController extends ComponentBase {
         if (this._mouseLeftDown) {
             this.roll -= e.movementX * Time.delta * 0.001 * this.mouseLeftFactor;
             this.pitch -= e.movementY * Time.delta * 0.001 * this.mouseLeftFactor;
-            this.pitch = clamp(this.pitch, this._topClamp, this._bottomClamp);
+            this.pitch = clamp(this.pitch, this.topClamp, this.bottomClamp);
         }
     }
 

@@ -5,6 +5,7 @@ import { ComponentBase } from "../ComponentBase";
 
 @RegisterComponent(AnimatorComponent, 'AnimatorComponent')
 export class AnimatorComponent extends ComponentBase {
+    public animStopCall: Function;
     public jointMatrixIndexTableBuffer: StorageGPUBuffer;
     public playBlendShapeLoop: boolean = false;
     protected inverseBindMatrices: Float32Array[];
@@ -47,7 +48,6 @@ export class AnimatorComponent extends ComponentBase {
         } else {
             console.warn(`not has anim ${anim}`);
         }
-
     }
 
     playBlendShape(shapeName: string, time: number = 0, speed: number = 1) {
@@ -132,6 +132,9 @@ export class AnimatorComponent extends ComponentBase {
     private updateTime() {
         if (this._skeletonStart) {
             this._skeletonTime += Time.delta * 0.001 * this._skeletonSpeed;
+            if (this.animStopCall && this._skeletonTime >= this._currentSkeletonClip.stopTime) {
+                this.animStopCall();
+            }
             if (this._currentSkeletonClip && this._currentSkeletonClip.loopTime) {
                 this._skeletonTime = this._skeletonTime % this._currentSkeletonClip.stopTime;
             }
