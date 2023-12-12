@@ -111,8 +111,8 @@ export class Sample_GraphicGrass {
                 GrassNodeStruct,
                 this.scene,
                 bitmapTexture2DArray,
-                1000,
-                1000 * 12
+                10000,
+                10000 * 2
             );
             let mat = mr.material as UnLitTexArrayMaterial;
             // mat.baseColor = new Color(0.2, 10.7, 0.56, 1.0);

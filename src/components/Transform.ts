@@ -10,6 +10,7 @@ import { Orientation3D } from "../math/Orientation3D";
 import { Quaternion } from "../math/Quaternion";
 import { Vector3 } from "../math/Vector3";
 import { ComponentBase } from "./ComponentBase";
+import { Entity } from "..";
 
 /**
  * The Transform component contains the position, rotation, and scaling of an object in 3D space.
@@ -17,6 +18,7 @@ import { ComponentBase } from "./ComponentBase";
  * @group Components
  */
 export class Transform extends ComponentBase {
+
     /**
     * @internal
     */

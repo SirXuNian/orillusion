@@ -1,9 +1,10 @@
-export let graphicDynamicCompute = (subCode: string) => {
+export let graphicDynamicCompute = (subCode: string, vertexInfo?: string) => {
     let code = /*wgsl*/`
     #include "GlobalUniform"
     #include "MatrixShader"
 
     ${subCode}
+    ${vertexInfo ? vertexInfo : ""}
 
     struct VertexInfo{
         position:vec3f,

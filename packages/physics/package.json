@@ -9,6 +9,7 @@
     "types": "./dist/index.d.ts",
     "files": ["dist"],
     "scripts": {
+        "dev": "vite",
         "build": "vite build && npm run build:types && npm run build:clean",
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
         "build:clean": "mv dist/packages/physics/* dist && rm -rf dist/src & rm -rf dist/packages",

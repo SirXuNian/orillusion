@@ -122,6 +122,8 @@ export class Camera3D extends ComponentBase {
         this.viewPort.w = webGPUContext.presentationSize[0];
         this.viewPort.h = webGPUContext.presentationSize[1];
         this.lookTarget = new Vector3(0, 0, 0);
+
+        this.perspective(60, webGPUContext.aspect, 1, 1000.0);
     }
 
     public getShadowBias(depthTexSize: number): number {
