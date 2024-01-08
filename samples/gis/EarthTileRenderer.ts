@@ -211,68 +211,103 @@ export class EarthTileRenderer extends MeshRenderer {
 
             // console.warn("瓦片编号:", tInfo.tileX, tInfo.tileY, z);
 
-            let pixelPos = test.lnglatToPixel(LngLat.x, LngLat.y, z);
-            console.warn('pixelPos:', pixelPos.pixelX, pixelPos.pixelY);
-            let wolrdPos = GISMath.PixelToWorldPos(pixelPos.pixelX, pixelPos.pixelY, z);
+            let testLevel = 18;
+            // let point = new Vector2(120.148732, 30.231006);
 
-            if (!this.sphereObj) {
-                let obj = new Object3D();
-                let mr = obj.addComponent(MeshRenderer)
-                mr.geometry = new SphereGeometry(GISMath.EarthRadius*0.1, 16, 16)
-                mr.material = new UnLitMaterial();
-                view.scene.addChild(obj);
-                this.sphereObj = obj
-                console.warn("Create SphereGeometry")
-            }
+            //中国美术馆
+            // let point = new Vector2(121.49459113095091, 31.184381529634607);
 
-            this.sphereObj.x = wolrdPos.x
-            this.sphereObj.y = wolrdPos.y
-            this.sphereObj.z = wolrdPos.z
-            console.warn("SpherePos:", wolrdPos.x, wolrdPos.y, wolrdPos.z)
+            //梅赛德斯
+            // let point = new Vector2(121.49306763623045, 31.18898906345562);
 
-            let mercatorPos = GISMath.LngLatToMercator(LngLat.x, LngLat.y);
+            //松江中央公园
+            // let point = new Vector2(121.2265955350189, 31.035194987435165);
 
-            let tileXY = GISMath.MercatorToTileXY(mercatorPos.x, mercatorPos.y, z);
+            //橘子洲头
+            let point = new Vector2(112.9603384873657, 28.167600241852714);
 
-            if (this.lastTileXY.equals(tileXY))
-                return;
 
-            this.lastTileXY.copyFrom(tileXY);
+            //不能直接转小数点
+            //31.1865903,121.48940694
+            // 31°11'11"N 121°29'23"E
 
-            this.updateRTEMat(view.camera);
 
-            // console.warn(e, z);
-            console.warn(`${LngLat.x}, ${LngLat.y}}`);
+            // let point = new Vector2(116.3671875, 39.90973623453718);
+            let a1 = test.lnglatToTile(point.x, point.y, testLevel);
+            let a2 = test.lnglatToTile2(point.x, point.y, testLevel);
+            let p1 = test.lnglatToPixel(point.x, point.y, testLevel);
+            console.error("lnglatToTile", a1);
+            console.error("lnglatToTile2", a2);
+            console.error("lnglatToPixel", p1);
 
-            const tileInfo = GISMath.ComputeVisibleTiles(tileXY.x, tileXY.y, z, rangeAera, true);
+            let url = `https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x=${a1.x}&y=${a1.y}&z=${testLevel}`
+            Engine3D.res.loadTexture(url).then((texture) => {
+                console.error("complete", p1);
+            });
 
-            let unassociatedTile = this.associationTileTextureIndex(tileInfo);
 
-            for (let i = 0; i < unassociatedTile.length; i++) {
-                let tile = unassociatedTile[i];
-                // let url = `https://webrd01.is.autonavi.com/appmaptile?x=${tile.tileX}&y=${tile.tileY}&z=${tile.tileZoom}&lang=zh_cn&size=1&scale=1&style=8`
-                let url = `https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x=${tile.tileX}&y=${tile.tileY}&z=${tile.tileZoom}`
-                Engine3D.res.loadTexture(url).then((texture) => {
-                    let texIndex = this.findTextureIndex(tile);
-                    if (texIndex != -1) {
-                        this.texs[texIndex] = texture as BitmapTexture2D;
-                        this.texture.setTexture(texIndex, this.texs[texIndex]);
-                    }
-                });
-            }
+            // let pixelPos = test.lnglatToPixel(LngLat.x, LngLat.y, z);
+            // console.warn('pixelPos:', pixelPos.pixelX, pixelPos.pixelY);
+            // let wolrdPos = GISMath.PixelToWorldPos(pixelPos.pixelX, pixelPos.pixelY, z);
 
-            // update TileData to GPUBuffer
-            for (let i = 0; i < this._tileData.length && i < tileInfo.length; i++) {
-                this._tileData[i] = tileInfo[i];
-                this.tileBuffer.setStruct(TileData, i, tileInfo[i]);
-            }
-            this.tileBuffer.apply();
+            // if (!this.sphereObj) {
+            //     let obj = new Object3D();
+            //     let mr = obj.addComponent(MeshRenderer)
+            //     mr.geometry = new SphereGeometry(GISMath.EarthRadius * 0.1, 16, 16)
+            //     mr.material = new UnLitMaterial();
+            //     view.scene.addChild(obj);
+            //     this.sphereObj = obj
+            //     console.warn("Create SphereGeometry")
+            // }
 
-            this.earthInfoData.count = tileInfo.length;
-            this.earthInfo.setStruct(EarthInfo, 0, this.earthInfoData);
-            this.earthInfo.apply();
+            // this.sphereObj.x = wolrdPos.x
+            // this.sphereObj.y = wolrdPos.y
+            // this.sphereObj.z = wolrdPos.z
+            // console.warn("SpherePos:", wolrdPos.x, wolrdPos.y, wolrdPos.z)
 
-            this._needUpdate = true;
+            // let mercatorPos = GISMath.LngLatToMercator(LngLat.x, LngLat.y);
+
+            // let tileXY = GISMath.MercatorToTileXY(mercatorPos.x, mercatorPos.y, z);
+
+            // if (this.lastTileXY.equals(tileXY))
+            //     return;
+
+            // this.lastTileXY.copyFrom(tileXY);
+
+            // this.updateRTEMat(view.camera);
+
+            // // console.warn(e, z);
+            // console.warn(`${LngLat.x}, ${LngLat.y}}`);
+
+            // const tileInfo = GISMath.ComputeVisibleTiles(tileXY.x, tileXY.y, z, rangeAera, true);
+
+            // let unassociatedTile = this.associationTileTextureIndex(tileInfo);
+
+            // for (let i = 0; i < unassociatedTile.length; i++) {
+            //     let tile = unassociatedTile[i];
+            //     // let url = `https://webrd01.is.autonavi.com/appmaptile?x=${tile.tileX}&y=${tile.tileY}&z=${tile.tileZoom}&lang=zh_cn&size=1&scale=1&style=8`
+            //     let url = `https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x=${tile.tileX}&y=${tile.tileY}&z=${tile.tileZoom}`
+            //     Engine3D.res.loadTexture(url).then((texture) => {
+            //         let texIndex = this.findTextureIndex(tile);
+            //         if (texIndex != -1) {
+            //             this.texs[texIndex] = texture as BitmapTexture2D;
+            //             this.texture.setTexture(texIndex, this.texs[texIndex]);
+            //         }
+            //     });
+            // }
+
+            // // update TileData to GPUBuffer
+            // for (let i = 0; i < this._tileData.length && i < tileInfo.length; i++) {
+            //     this._tileData[i] = tileInfo[i];
+            //     this.tileBuffer.setStruct(TileData, i, tileInfo[i]);
+            // }
+            // this.tileBuffer.apply();
+
+            // this.earthInfoData.count = tileInfo.length;
+            // this.earthInfo.setStruct(EarthInfo, 0, this.earthInfoData);
+            // this.earthInfo.apply();
+
+            // this._needUpdate = true;
         }
     }
 
