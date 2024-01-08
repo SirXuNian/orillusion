@@ -42,6 +42,35 @@ export class BitmapTexture2DArray extends Texture implements ITexture {
         }
     }
 
+    public setTexture(index: number, tex: BitmapTexture2D) {
+        if (index < 0 || index >= this._bitmapTextures.length)
+            return false;
+
+        tex.pid = index;
+        this._bitmapTextures[index] = tex;
+
+        let encoder = GPUContext.beginCommandEncoder();
+        encoder.copyTextureToTexture(
+            {
+                texture: tex.getGPUTexture(),
+                mipLevel: 0,
+                origin: { x: 0, y: 0, z: 0 },
+            },
+            {
+                texture: this.getGPUTexture(),
+                mipLevel: 0,
+                origin: { x: 0, y: 0, z: index },
+            },
+            {
+                width: this.width,
+                height: this.height,
+                depthOrArrayLayers: 1,
+            },
+        );
+        GPUContext.endCommandEncoder(encoder);
+        return true;
+    }
+
     /**
      * add one BitmapTexture2D to this
      * @param bitmapTexture the bitmapTexture2D be added

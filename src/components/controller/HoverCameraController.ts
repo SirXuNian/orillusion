@@ -77,13 +77,13 @@ export class HoverCameraController extends ComponentBase {
      * Distance between camera and target
      */
     public distance: number = 10;
-    private _roll: number = 0;
+    public _roll: number = 0;
 
     /**
      * Roll angle around y-axis
      */
     public roll: number = 0;
-    private _pitch: number = 0;
+    public _pitch: number = 0;
 
     /**
      * Pitch angle around x-axis
@@ -147,9 +147,9 @@ export class HoverCameraController extends ComponentBase {
         this.roll = roll;
         this.pitch = pitch;
         this.distance = distance;
-        if(this.maxDistance < distance * 1.5){
-            this.maxDistance = distance * 1.5;
-        }
+        // if(this.maxDistance < distance * 1.5){
+        //     this.maxDistance = distance * 1.5;
+        // }
         if (target) {
             this._targetPos.transform.localPosition.copy(target);
         }
@@ -228,8 +228,8 @@ export class HoverCameraController extends ComponentBase {
         }
 
         if (this._mouseLeftDown) {
-            this.roll -= e.movementX * Time.delta * 0.001 * this.mouseLeftFactor;
-            this.pitch -= e.movementY * Time.delta * 0.001 * this.mouseLeftFactor;
+            this.roll -= e.movementX * Time.delta * this.wheelStep * 0.1 * this.mouseLeftFactor;
+            this.pitch -= e.movementY * Time.delta * this.wheelStep * 0.1 * this.mouseLeftFactor;
             this.pitch = clamp(this.pitch, this._topClamp, this._bottomClamp);
         }
     }
