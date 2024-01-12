@@ -1,3 +1,5 @@
+import { DEGREES_TO_RADIANS, MathUtil, Vector2, Vector3 } from "../../src";
+
 function _Math_sinh(x) {
   return (Math.exp(x) - Math.exp(-x)) / 2;
 }
@@ -21,7 +23,7 @@ export class TransformClassNormal {
   /*
    * 分辨率，表示水平方向上一个像素点代表的真实距离(m)
    */
-  public getResolution(latitude, level){
+  public getResolution(latitude, level) {
     let resolution = 6378137.0 * 2 * Math.PI * Math.cos(latitude) / 256 / this._getMapSize(level);
     return resolution;
   }
@@ -41,7 +43,7 @@ export class TransformClassNormal {
 
   _latToTileY(latitude, level) {
     let lat_rad = latitude * Math.PI / 180;
-    let y = (1 - Math.log(Math.tan(lat_rad) + 1 / Math.cos(lat_rad)) / Math.PI)/2;
+    let y = (1 - Math.log(Math.tan(lat_rad) + 1 / Math.cos(lat_rad)) / Math.PI) / 2;
     let tileY = Math.floor(y * this._getMapSize(level));
 
     // 代替性算法,使用了一些三角变化，其实完全等价
@@ -59,10 +61,7 @@ export class TransformClassNormal {
     let tileX = this._lngToTileX(longitude, level);
     let tileY = this._latToTileY(latitude, level)
 
-    return {
-      tileX,
-      tileY
-    };
+    return new Vector2(tileX, tileY);
   }
 
   _lngToPixelX(longitude, level) {
@@ -73,7 +72,7 @@ export class TransformClassNormal {
   }
 
   _latToPixelY(latitude, level) {
-    let sinLatitude = Math.sin(latitude * Math.PI / 180);
+    let sinLatitude = Math.sin(latitude * DEGREES_TO_RADIANS);
     let y = 0.5 - Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI);
     let pixelY = Math.floor(y * this._getMapSize(level) * 256 % 256);
 
@@ -118,5 +117,11 @@ export class TransformClassNormal {
       lng,
       lat
     };
+  }
+
+  public lnglatToTile2(lng: number, lat: number, level: number) {
+    let titleX = Math.floor((lng + 180) / 360 * Math.pow(2, level));
+    let titleY = Math.floor((1 - Math.asinh(Math.tan(lat * DEGREES_TO_RADIANS)) / Math.PI) * Math.pow(2, level - 1))
+    return new Vector2(titleX, titleY);
   }
 }
