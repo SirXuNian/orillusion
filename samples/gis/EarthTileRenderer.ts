@@ -165,7 +165,7 @@ export class EarthTileRenderer extends MeshRenderer {
 
     protected texs: BitmapTexture2D[];
     protected lastTileXY: Vector2 = new Vector2();
-    protected levelZ:number = -1;
+    protected levelZ: number = -1;
     protected sphereObj: Object3D;
     public onUpdate(view?: View3D) {
         if (this._needUpdate) {
@@ -176,7 +176,7 @@ export class EarthTileRenderer extends MeshRenderer {
         let z = 20 - GISMath.getLevel(GISMath.GetLevels(), controller.cameraDistanceToEarthSurface, 5.0);
         // z = Math.max(z, 4);
 
-        let v = GISMath.WorldPosToLngLat(controller.getCameraPosition());
+        let v = GISMath.SurfacePosToLngLat(controller.getCameraPosition());
         let LngLat = new Vector3(v[0], v[1]);
         LngLat.set(112.9603384873657, 28.167600241852714, 0);
         controller.moveTestBall(LngLat.x, LngLat.y);

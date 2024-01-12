@@ -1,4 +1,4 @@
-import { DEGREES_TO_RADIANS, Matrix4, RADIANS_TO_DEGREES, Vector2, Vector3, rad2Deg, sin } from "@orillusion/core";
+import { DEGREES_TO_RADIANS, Matrix4, RADIANS_TO_DEGREES, Ray, Vector2, Vector3, rad2Deg, sin } from "@orillusion/core";
 import { TileData } from "./EarthTileRenderer";
 
 export class GISPostion {
@@ -49,7 +49,13 @@ export class GISMath {
     public static readonly Size = 360;
     public static readonly TileSize = 256;
 
-    public static WorldPosToLngLat(position: Vector3): [number, number] {
+    public static readonly Max_Div_Min = this.EarthRadius / this.PolarRadius;
+    public static readonly Min_Div_Max = this.PolarRadius / this.EarthRadius;
+
+    public static SurfacePosToLngLat(position: Vector3): [number, number] {
+        if (Math.abs(position.x) <= 0.01 && Math.abs(position.z) <= 0.01) {
+            return [0, position.y > 0 ? 90 : -90];
+        }
         let surface = position.clone().normalize();
         let xz = new Vector2(surface.x, surface.z);
         xz.normalize();
@@ -69,7 +75,7 @@ export class GISMath {
     private static UP: Vector3 = Vector3.UP;
     private static FORWARD: Vector3 = Vector3.FORWARD;
 
-    public static LngLatToEarthSurface(lng: number, lat: number, ret?: Vector3): Vector3 {
+    public static LngLatToPolarEarthSurface(lng: number, lat: number, ret?: Vector3): Vector3 {
         ret ||= new Vector3();
 
         if (lat >= 90) {
@@ -88,8 +94,31 @@ export class GISMath {
             mat.transformVector(ret, ret);
         }
 
-        ret.normalize(this.EarthRadius);
 
+        //sphere to polar surface
+        ret = this.CalcPolarSurface(ret, new Vector3());
+        return ret;
+    }
+
+
+    public static CalcPolarSurface(position: Vector3, ret: Vector3): Vector3 {
+        position.normalize(this.EarthRadius);
+        const sphereY = position.y;
+        ret.copyFrom(position);
+        if (Math.abs(position.x) < 1e-12 || Math.abs(position.z) < 1e-12) {
+            ret.y = sphereY * this.Min_Div_Max;
+            return ret;
+        }
+
+        //sphere to polar surface
+        const xzLength = Vector2.HELP_0.set(ret.x, ret.z).length();
+        const tanAngle = sphereY / xzLength;
+
+        const ratio = 1 + (this.Min_Div_Max / tanAngle) * (this.Min_Div_Max / tanAngle);
+        let polarY = this.EarthRadius / Math.sqrt(ratio);
+        polarY *= this.Min_Div_Max;
+        const scale = polarY / sphereY;
+        ret.multiplyScalar(scale);
         return ret;
     }
 
@@ -105,6 +134,38 @@ export class GISMath {
         return 0;
     }
 
+
+    private static help2Vec3: Vector3 = new Vector3();
+    private static help3Vec3: Vector3 = new Vector3();
+    private static help4Vec3: Vector3 = new Vector3();
+    private static help5Vec3: Vector3 = new Vector3();
+
+    public static HitPolarSurface(ray: Ray): Vector3 {
+        let earthRaius: number = this.EarthRadius;
+        //scale ray
+        ray.origin.y *= this.Max_Div_Min;
+        ray.direction.y *= this.Max_Div_Min;
+        ray.direction.normalize();
+
+        let toCenter = this.help2Vec3.copyFrom(ray.origin);
+        let toCenterLen = toCenter.length;
+        toCenter.normalize().negate();
+        let cosValue = ray.direction.dotProduct(toCenter);
+        let angle = Math.acos(cosValue);
+        let crossPointLen = Math.sin(angle) * toCenterLen;
+        if (crossPointLen >= earthRaius)
+            return null;
+        let up = ray.direction.crossProduct(toCenter, this.help3Vec3).normalize();
+        let right = ray.direction.crossProduct(up, this.help4Vec3);
+        let crossPoint = this.help5Vec3.copyFrom(right).multiplyScalar(crossPointLen);
+        let sinValue = crossPointLen / earthRaius;
+        let edgeLength = Math.sqrt(1 - sinValue * sinValue) * earthRaius;
+        let ret = crossPoint.add(ray.direction.clone().multiplyScalar(-edgeLength));
+        ret.y *= this.Min_Div_Max;
+        return ret;
+    }
+
+
     public static CameraToLngLat(roll: number, pitch: number, result: Vector2 = new Vector2()): Vector2 {
         let lat = -pitch;
         let lng = (roll / 180 * Math.PI + (Math.PI / 2)) % this.PIX2;
@@ -118,8 +179,6 @@ export class GISMath {
         result.set(lng, lat);
         return result;
     }
-
-
 
     public static GetTileXY(lng: number, lat: number, levelZ: number): Vector2 {
         return new Vector2();
@@ -170,7 +229,7 @@ export class GISMath {
     public static spherify(e: number, t: number): Vector3 {
         const n = (90 - t) / 180 * Math.PI, r = e / 180 * Math.PI;
         let result = Vector3.HELP_0;
-        result.set(GISMath.EarthRadius * Math.sin(n) * Math.cos(r), GISMath.EarthRadius * Math.cos(n), GISMath.PolarRadius * Math.sin(n) * Math.sin(r));
+        result.set(GISMath.EarthRadius * Math.sin(n) * Math.cos(r), GISMath.PolarRadius * Math.cos(n), GISMath.EarthRadius * Math.sin(n) * Math.sin(r));
         return result;
     }
 
@@ -185,7 +244,7 @@ export class GISMath {
     }
 
     private static Levels = [];
-    public static GetLevels(): number[]{
+    public static GetLevels(): number[] {
         if (this.Levels.length === 0) {
             for (let z = 0; z < 20; z++) {
                 const tileNums = Math.pow(2, z);

@@ -141,8 +141,8 @@ export let EarthTileCompute = () => {
         let r:f32 = e / 180.0 * PI;
         return vec3f(
             EarthRadius * sin(n) * cos(r), 
-            EarthRadius * cos(n),
-            PolarRadius * sin(n) * sin(r)
+            PolarRadius * cos(n),
+            EarthRadius * sin(n) * sin(r)
         );
     }
 

@@ -63,6 +63,8 @@ export class Sample_GISCameraCtrl {
         {
             let texture = await Engine3D.res.loadTexture("textures/grid.jpg", null, true) as BitmapTexture2D;
             let earth = Object3DUtil.GetSingleSphere(this.radius, 0.2, 0.2, 0.2, 2000, 2000);
+            earth.localRotation = new Vector3(0, 0, 0);
+            earth.transform.scaleY = GISMath.Min_Div_Max;
             let mr = earth.getComponent(MeshRenderer);
             mr.material.setTexture('baseMap', texture)
 

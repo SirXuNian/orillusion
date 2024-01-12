@@ -37,7 +37,8 @@ export class Sample_Earth {
     }
 
     async initScene(scene: Scene3D) {
-        if (false) {
+        let tt = 1 - 1;
+        if (tt) {
             let tileZ = 2;
             let tileCount = Math.pow(2, tileZ);
             let tileSize = 360 / tileCount;
@@ -64,14 +65,16 @@ export class Sample_Earth {
             scene.addChild(obj);
 
 
-            let position = GISMath.LngLatToEarthSurface(112.9603384873657, 28.167600241852714);
+            let position = GISMath.LngLatToPolarEarthSurface(112.9603384873657, 28.167600241852714);
             cameraController.poseCamera(position.normalize(GISMath.EarthRadius * 1.1));
 
             let texture = await Engine3D.res.loadTexture("textures/grid.jpg", null, true) as BitmapTexture2D;
-            let earth = Object3DUtil.GetSingleSphere(GISMath.EarthRadius * 0.99, 0.2, 0.2, 0.2, 2000, 2000);
+            let earth = Object3DUtil.GetSingleSphere(GISMath.EarthRadius * 0.99999, 0.2, 0.2, 0.2, 2000, 2000);
+            earth.localRotation = new Vector3(0, 0, 0);
+            earth.transform.scaleY = GISMath.Min_Div_Max;//1.02;
             let mr = earth.getComponent(MeshRenderer);
             mr.material.setTexture('baseMap', texture);
-            scene.addChild(earth);
+            // scene.addChild(earth);
 
             let mat = mr.material as LitMaterial;
             let uvRect = mat.getUniformV4('transformUV1');

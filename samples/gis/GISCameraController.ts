@@ -60,8 +60,6 @@ export class GISCameraController extends ComponentBase {
 
     public camera: Camera3D;
     private _ctrlData: CameraCtrlData;
-    private _fromPoint: Vector3 = new Vector3();
-    private _currentPoint: Vector3 = new Vector3();
     private _ray: Ray = new Ray();
     private _destDistance: number = 0;//相机和球心的距离
     private _mouseLeftDown: boolean = false;
@@ -112,7 +110,7 @@ export class GISCameraController extends ComponentBase {
             sp.localPosition = this._tempPosCamera.clone().normalize(this._earthRadius);
 
             this._toSp = sp;
-            this._earthObject.addChild(this._toSp);
+            this.transform.scene3D.addChild(this._toSp);
         }
         {
             let sp = Object3DUtil.GetSingleSphere(1, 0, 1, 0);
@@ -120,7 +118,7 @@ export class GISCameraController extends ComponentBase {
             sp.localPosition = this._tempPosCamera.clone().normalize(this._earthRadius);
 
             this._fromSp = sp;
-            this._earthObject.addChild(this._fromSp);
+            this.transform.scene3D.addChild(this._fromSp);
         }
 
         {
@@ -129,7 +127,7 @@ export class GISCameraController extends ComponentBase {
             sp.localPosition = this._tempPosCamera.clone().normalize(this._earthRadius);
 
             this._testSp = sp;
-            this._earthObject.addChild(this._testSp);
+            this.transform.scene3D.addChild(this._testSp);
         }
 
         GUIHelp.add(this.camera, 'far', 100, 6378137 * 10, 1);
@@ -142,7 +140,7 @@ export class GISCameraController extends ComponentBase {
 
     private data: { lng: number, lat: number } = { lng: 0, lat: 0 };
     public moveTestBall(lng: number = this.data.lng, lat: number = this.data.lat) {
-        let position = GISMath.LngLatToEarthSurface(lng, lat);
+        let position = GISMath.LngLatToPolarEarthSurface(lng, lat);
         this._testSp.localPosition = position;
     }
 
@@ -180,11 +178,11 @@ export class GISCameraController extends ComponentBase {
                 let dt = this._ctrlData;
                 dt.start(this.camera, e.mouseX, e.mouseY);
                 this.screenPointToRay(e.mouseX, e.mouseY);
-                let pickPoint = this.getHitPoint(this._ray);
+                let pickPoint = GISMath.HitPolarSurface(this._ray);
                 if (pickPoint) {
                     dt.pickStart.enable = true;
                     dt.pickStart.earthSurface.copyFrom(pickPoint);
-                    console.log(GISMath.WorldPosToLngLat(pickPoint));
+                    console.log(GISMath.SurfacePosToLngLat(pickPoint));
                 } else {
                     dt.pickStart.enable = false;
                 }
@@ -221,22 +219,19 @@ export class GISCameraController extends ComponentBase {
     private calculateDeltaRotation() {
         let dt = this._ctrlData;
         if (dt.pickStart.enable) {
-            this._fromPoint.copyFrom(dt.pickStart.earthSurface);
-
             this.screenPointToRay(dt.pickCurrent.mouse.x, dt.pickCurrent.mouse.y);
-            let currentPoint = this.getHitPoint(this._ray);
+            let currentPoint = GISMath.HitPolarSurface(this._ray);
             dt.pickCurrent.enable = currentPoint != null;
             if (currentPoint) {
-                this._currentPoint = currentPoint;
                 dt.pickCurrent.earthSurface.copyFrom(currentPoint);
 
-                this._fromPoint.normalize(this._earthRadius);
-                this._currentPoint.normalize(this._earthRadius);
+                this.help2Vec3.copyFrom(dt.pickStart.earthSurface);
+                this.help3Vec3.copyFrom(dt.pickCurrent.earthSurface);
 
-                this.help0Vec3.copyFrom(this._currentPoint).normalize();
-                this.help1Vec3.copyFrom(this._fromPoint).normalize();
+                this.help2Vec3.normalize();
+                this.help3Vec3.normalize();
 
-                Matrix4.fromToRotation(this.help0Vec3, this.help1Vec3, dt.deltaRotation);
+                Matrix4.fromToRotation(this.help3Vec3, this.help2Vec3, dt.deltaRotation);
                 dt.deltaRotation.transformVector(dt.snapShot.up, dt.activeUp);
             }
         }
@@ -253,31 +248,14 @@ export class GISCameraController extends ComponentBase {
         ray.direction = end;
     }
 
-    private getHitPoint(ray: Ray): Vector3 {
-        let toCenter = this.help2Vec3.copyFrom(ray.origin);
-        let toCenterLen = toCenter.length;
-        toCenter.normalize().negate();
-        let cosValue = ray.direction.dotProduct(toCenter);
-        let angle = Math.acos(cosValue);
-        let crossPointLen = Math.sin(angle) * toCenterLen;
-        if (crossPointLen >= this._earthRadius)
-            return null;
-        let up = ray.direction.crossProduct(toCenter, this.help3Vec3).normalize();
-        let right = ray.direction.crossProduct(up, this.help4Vec3);
-        let crossPoint = this.help5Vec3.copyFrom(right).multiplyScalar(crossPointLen);
-        let sinValue = crossPointLen / this._earthRadius;
-        let edgeLength = Math.sqrt(1 - sinValue * sinValue) * this._earthRadius;
-        return crossPoint.add(ray.direction.clone().multiplyScalar(-edgeLength));
-    }
-
     private calcRotateMatrix(): void {
         let dt = this._ctrlData;
         if (dt.pickStart.mouse.distance(dt.pickCurrent.mouse) > 1) {
             this.calculateDeltaRotation();
             if (dt.pickStart.enable) {
-                this._fromSp.localPosition = this._fromPoint;
+                this._fromSp.localPosition = dt.pickStart.earthSurface;
                 if (dt.pickCurrent.enable) {
-                    this._toSp.localPosition = this._currentPoint;
+                    this._toSp.localPosition = dt.pickCurrent.earthSurface;
                     dt.deltaRotation.transformVector(dt.snapShot.position, this._tempPosCamera);
                 }
             }
