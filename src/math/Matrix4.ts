@@ -3,7 +3,7 @@ import { DEGREES_TO_RADIANS, clamp, RADIANS_TO_DEGREES } from './MathUtil';
 import { Orientation3D } from './Orientation3D';
 import { Quaternion } from './Quaternion';
 import { Vector3 } from './Vector3';
-const EPSILON: number = 0.000001;
+const EPSILON: number = 1e-12;
 
 /**
  * math 4*4 matrix
@@ -553,18 +553,16 @@ export class Matrix4 {
      * @returns
      */
     public perspectiveMultiplyPoint3(v: Vector3, output: Vector3): boolean {
-        let res: Vector3 = Vector3.HELP_2;
-        let w: number;
         let rawData = this.rawData;
-        res.x = rawData[0] * v.x + rawData[4] * v.y + rawData[8] * v.z + rawData[12];
-        res.y = rawData[1] * v.x + rawData[5] * v.y + rawData[9] * v.z + rawData[13];
-        res.z = rawData[2] * v.x + rawData[6] * v.y + rawData[10] * v.z + rawData[14];
-        w = rawData[3] * v.x + rawData[7] * v.y + rawData[11] * v.z + rawData[15];
-        if (Math.abs(w) > 1.0e-7) {
+        let x = rawData[0] * v.x + rawData[4] * v.y + rawData[8] * v.z + rawData[12];
+        let y = rawData[1] * v.x + rawData[5] * v.y + rawData[9] * v.z + rawData[13];
+        let z = rawData[2] * v.x + rawData[6] * v.y + rawData[10] * v.z + rawData[14];
+        let w = rawData[3] * v.x + rawData[7] * v.y + rawData[11] * v.z + rawData[15];
+        if (Math.abs(w) > EPSILON) {
             let invW = 1.0 / w;
-            output.x = res.x * invW;
-            output.y = res.y * invW;
-            output.z = res.z * invW;
+            output.x = x * invW;
+            output.y = y * invW;
+            output.z = z * invW;
             return true;
         } else {
             output.x = 0.0;
@@ -744,7 +742,6 @@ export class Matrix4 {
     public transformDir(fromDirection: Vector3, toDirection: Vector3) {
         let data = this.rawData;
 
-        let EPSILON: number = 0.000001;
         let v: Vector3 = Vector3.ZERO;
         toDirection.crossProduct(fromDirection, v);
         let e: number = toDirection.dotProduct(fromDirection);
@@ -1765,7 +1762,7 @@ export class Matrix4 {
      */
     public invert(): boolean {
         let d = this.determinant;
-        let invertable = Math.abs(d) > 0.00000000001;
+        let invertable = Math.abs(d) > EPSILON;
         let data: Float32Array = this.rawData;
 
         if (invertable) {

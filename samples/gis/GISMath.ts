@@ -1,4 +1,4 @@
-import { DEGREES_TO_RADIANS, RADIANS_TO_DEGREES, Vector2, Vector3 } from "@orillusion/core";
+import { DEGREES_TO_RADIANS, Matrix4, RADIANS_TO_DEGREES, Vector2, Vector3, rad2Deg, sin } from "@orillusion/core";
 import { TileData } from "./EarthTileRenderer";
 
 export class GISPostion {
@@ -49,6 +49,61 @@ export class GISMath {
     public static readonly Size = 360;
     public static readonly TileSize = 256;
 
+    public static WorldPosToLngLat(position: Vector3): [number, number] {
+        let surface = position.clone().normalize();
+        let xz = new Vector2(surface.x, surface.z);
+        xz.normalize();
+        let jd = rad2Deg(Math.atan2(xz.y, xz.x));
+        let surface2 = surface.clone();
+        surface2.y = 0;
+        surface2.normalize();
+
+        let wd = surface2.dotProduct(surface);
+        wd = rad2Deg(Math.acos(wd));
+
+        if (position.y < 0) wd *= -1;
+        return [jd, wd];
+    }
+
+    private static UP: Vector3 = Vector3.UP;
+    private static FORWARD: Vector3 = Vector3.FORWARD;
+
+    public static LngLatToEarthSurface(lng: number, lat: number, ret?: Vector3): Vector3 {
+        ret ||= new Vector3();
+
+        if (lat >= 90) {
+            ret.copyFrom(this.UP);
+        } else if (lat <= -90) {
+            ret.copyFrom(this.UP).negate();
+        } else {
+            lng = DEGREES_TO_RADIANS * lng;
+            lat = DEGREES_TO_RADIANS * lat;
+
+            ret.copyFrom(this.FORWARD);
+            ret.y = Math.tan(lat);
+            ret.normalize();
+
+            let mat = Matrix4.helpMatrix.makeRotationAxis(this.UP, lng);
+            mat.transformVector(ret, ret);
+        }
+
+        ret.normalize(this.EarthRadius);
+
+        return ret;
+    }
+
+
+    //cameraDistanceToEarthSurface
+    public static getLevel(list: number[], distanceToSurface: number, scale: number = 0.1): number {
+        let area = distanceToSurface * scale;
+
+        for (let level = 0, count = list.length; level < count; level++) {
+            if (area > list[level])
+                return level;
+        }
+        return 0;
+    }
+
     public static CameraToLngLat(roll: number, pitch: number, result: Vector2 = new Vector2()): Vector2 {
         let lat = -pitch;
         let lng = (roll / 180 * Math.PI + (Math.PI / 2)) % this.PIX2;
@@ -63,7 +118,9 @@ export class GISMath {
         return result;
     }
 
-    public static GetTileXY(lng: number, lat: number, levelZ: number) : Vector2 {
+
+
+    public static GetTileXY(lng: number, lat: number, levelZ: number): Vector2 {
         return new Vector2();
     }
 

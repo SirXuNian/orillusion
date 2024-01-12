@@ -58,16 +58,17 @@ export class Object3DUtil {
         return obj;
     }
 
-    public static GetSingleSphere(radius: number, r: number, g: number, b: number) {
+    public static GetSingleSphere(radius: number, r: number, g: number, b: number, wSegment?: number, hSegment?: number) {
         this.initHeap();
-
+        wSegment ||= 20;
+        hSegment ||= 20;
         let mat = new LitMaterial();
         mat.baseColor = new Color(r, g, b, 1);
 
         let obj = new Object3D();
         let renderer = obj.addComponent(MeshRenderer);
         renderer.castGI = true;
-        renderer.geometry = new SphereGeometry(radius, 20, 20);
+        renderer.geometry = new SphereGeometry(radius, wSegment, hSegment);
         renderer.material = mat;
         return obj;
     }

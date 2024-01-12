@@ -42,26 +42,30 @@ export class CameraUtil {
      * @returns
      */
     public static UnProjection(sX: number, sY: number, sZ: number = 1, camera?: Camera3D) {
-        let mouse = new Vector3(sX, sY, 0);
+        return this.UnProjectionMat4(sX, sY, sZ, camera.projectionMatrix, camera.transform.worldMatrix);
+    }
+
+    private static HELP_0: Vector3 = new Vector3();
+    public static UnProjectionMat4(sX: number, sY: number, sZ: number = 1, projectionMatrix: Matrix4, worldMatrix: Matrix4, outP?: Vector3) {
         let sc = 1;
-        let ina: Vector3 = Vector3.HELP_0;
+        let ina: Vector3 = this.HELP_0;
 
         let ox = webGPUContext.canvas.offsetLeft;
         let oy = webGPUContext.canvas.offsetTop;
         let w = webGPUContext.canvas.clientWidth;
         let h = webGPUContext.canvas.clientHeight;
-        ina.x = (((mouse.x - ox) * sc) / w - 0.5) * 2;
-        ina.y = -(((mouse.y - oy) * sc) / h - 0.5) * 2;
+        ina.x = (((sX - ox) * sc) / w - 0.5) * 2;
+        ina.y = -(((sY - oy) * sc) / h - 0.5) * 2;
         ina.z = sZ;
 
-        let outP = new Vector3(0, 0, 0);
+        outP ||= new Vector3(0, 0, 0);
         let projectWorld = Matrix4.helpMatrix2;
-        projectWorld.copyFrom(camera.projectionMatrix);
+        projectWorld.copyFrom(projectionMatrix);
         projectWorld.invert();
         let cameraToWorld = Matrix4.helpMatrix;
         cameraToWorld.identity();
         cameraToWorld.multiply(projectWorld);
-        cameraToWorld.multiply(camera.transform.worldMatrix);
+        cameraToWorld.multiply(worldMatrix);
         cameraToWorld.perspectiveMultiplyPoint3(ina, outP);
         return outP;
     }
@@ -74,10 +78,14 @@ export class CameraUtil {
      * @returns
      */
     public static Projection(point: Vector3, camera: Camera3D, target?: Vector3) {
+        return this.ProjectionMat4(point, camera.viewMatrix, camera.projectionMatrix, target);
+    }
+
+    public static ProjectionMat4(point: Vector3, viewMatrix: Matrix4, projectionMatrix: Matrix4, target?: Vector3) {
         let outP = target ? target : new Vector3(0, 0, 0);
         let cameraToWorld = Matrix4.helpMatrix;
-        cameraToWorld.copyFrom(camera.viewMatrix);
-        cameraToWorld.multiply(camera.projectionMatrix);
+        cameraToWorld.copyFrom(viewMatrix);
+        cameraToWorld.multiply(projectionMatrix);
         cameraToWorld.perspectiveMultiplyPoint3(point, outP);
 
         // let ox = webGPUContext.canvas.offsetLeft;

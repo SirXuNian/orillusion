@@ -61,8 +61,9 @@ export class GUIUtil {
     }
 
     //render transform
-    public static renderTransform(transform: Transform, open: boolean = true, name?: string) {
+    public static renderTransform(transform: Transform, open: boolean = true, name?: string, scSize?: number) {
         name ||= 'Transform';
+        scSize ||= 2;
         GUIHelp.addFolder(name);
         GUIHelp.add(transform, 'x', -100.0, 100.0, 0.01);
         GUIHelp.add(transform, 'y', -100.0, 100.0, 0.01);
@@ -70,9 +71,9 @@ export class GUIUtil {
         GUIHelp.add(transform, 'rotationX', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationZ', 0.0, 360.0, 0.01);
-        GUIHelp.add(transform, 'scaleX', -2.0, 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleY', -2.0, 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleZ', -2.0, 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleX', -scSize, scSize, 0.01);
+        GUIHelp.add(transform, 'scaleY', -scSize, scSize, 0.01);
+        GUIHelp.add(transform, 'scaleZ', -scSize, scSize, 0.01);
 
         open && GUIHelp.open();
         GUIHelp.endFolder();

@@ -78,7 +78,7 @@ export class SphereGeometry extends GeometryBase {
         let position_arr = new Float32Array(vertexCount * 3);
         let normal_arr = new Float32Array(vertexCount * 3);
         let uv_arr = new Float32Array(vertexCount * 2);
-        let indice_arr = new Uint16Array(_segmentsW * _segmentsH * 2 * 3);
+        let indice_arr = new Uint32Array(_segmentsW * _segmentsH * 2 * 3);
 
         let pi = 0;
         let ni = 0;
