@@ -5,5 +5,5 @@ import { Sample_LoadVox } from "./loader/Sample_LoadVox";
 
 // new Sample_GraphicShape().run();
 // new Sample_LoadVox().run();
-// // new Sample_Earth().run();
-new Sample_GISCameraCtrl().run();
+new Sample_Earth().run();
+// new Sample_GISCameraCtrl().run();

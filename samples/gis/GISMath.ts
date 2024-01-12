@@ -53,7 +53,8 @@ export class GISMath {
         let surface = position.clone().normalize();
         let xz = new Vector2(surface.x, surface.z);
         xz.normalize();
-        let jd = rad2Deg(Math.atan2(xz.y, xz.x));
+        let jd = rad2Deg(Math.atan2(xz.y, xz.x)) - 180;
+        if (jd < 0) jd = -jd;
         let surface2 = surface.clone();
         surface2.y = 0;
         surface2.normalize();
@@ -76,7 +77,7 @@ export class GISMath {
         } else if (lat <= -90) {
             ret.copyFrom(this.UP).negate();
         } else {
-            lng = DEGREES_TO_RADIANS * lng;
+            lng = DEGREES_TO_RADIANS * lng - 90 * DEGREES_TO_RADIANS;
             lat = DEGREES_TO_RADIANS * lat;
 
             ret.copyFrom(this.FORWARD);
@@ -98,8 +99,8 @@ export class GISMath {
         let area = distanceToSurface * scale;
 
         for (let level = 0, count = list.length; level < count; level++) {
-            if (area > list[level])
-                return level;
+            if (area < list[level])
+                return level > 0 ? level - 1 : 0;
         }
         return 0;
     }
@@ -184,10 +185,7 @@ export class GISMath {
     }
 
     private static Levels = [];
-    public static GetBestLevelResolution(t: number, i: number) {
-        const n = window.devicePixelRatio * i;
-        const r = Math.tan(t / 50 * 0.5);
-
+    public static GetLevels(): number[]{
         if (this.Levels.length === 0) {
             for (let z = 0; z < 20; z++) {
                 const tileNums = Math.pow(2, z);
@@ -195,11 +193,20 @@ export class GISMath {
                 this.Levels.push(tileTotalPixel);
             }
         }
+        return this.Levels;
+    }
+
+
+    public static GetBestLevelResolution(t: number, i: number) {
+        const n = window.devicePixelRatio * i;
+        const r = Math.tan(t / 50 * 0.5);
+
+        let levels = this.GetLevels();
 
         let level = 0;
-        for (level = 0; level < this.Levels.length; level++) {
-            if (r * this.Levels[level] >= n) {
-                // console.error(`${r}, ${this.Levels[level]}, ${r * this.Levels[level]} > ${n}, ${level}`);
+        for (level = 0; level < levels.length; level++) {
+            if (r * levels[level] >= n) {
+                // console.error(`${r}, ${levels[level]}, ${r * levels[level]} > ${n}, ${level}`);
                 break;
             }
         }
@@ -275,7 +282,7 @@ export class GISMath {
         if (center) {
             let v = Math.floor(rangeAera / 2);
             tileX -= v;
-            tileY -= v;
+            tileY -= v - 1;
         }
 
         let tileArr: TileData[] = [];

@@ -1,39 +1,32 @@
-import { Engine3D, Scene3D, AtmosphericComponent, View3D, CameraUtil, HoverCameraController, Object3D, MeshRenderer, SphereGeometry, UnLitMaterial, BoxGeometry, SkyRenderer, Color, PlaneGeometry, Vector3, GPUPrimitiveTopology, GPUAddressMode, Camera3D } from "@orillusion/core";
+import { Engine3D, Scene3D, AtmosphericComponent, View3D, CameraUtil, HoverCameraController, Object3D, MeshRenderer, SphereGeometry, UnLitMaterial, BoxGeometry, SkyRenderer, Color, PlaneGeometry, Vector3, GPUPrimitiveTopology, GPUAddressMode, Camera3D, DirectLight, BitmapTexture2D, Object3DUtil, LitMaterial } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { EarthTile } from "./EarthTile";
 import { EarthTileRenderer } from "./EarthTileRenderer";
 import { GISMath } from "./GISMath";
+import { GISCameraController } from "./GISCameraController";
 
 export class Sample_Earth {
     public camera: Camera3D;
-    public cameraController: HoverCameraController;
 
     async run() {
-        Engine3D.setting.render.useLogDepth = true;
+        Engine3D.setting.render.useLogDepth = false;
 
         await Engine3D.init({ renderLoop: () => { this.onRenderLoop() } });
 
         let scene = new Scene3D();
+        scene.addComponent(AtmosphericComponent).sunY = 0.6;
+
+        let obj = new Object3D();
+        let dl = obj.addComponent(DirectLight);
+        scene.addChild(obj);
 
         GUIHelp.init();
 
         let camera = CameraUtil.createCamera3DObject(scene);
-        camera.perspective(60, Engine3D.aspect, 0.1, 6000 * 10000.0);
+        camera.perspective(60, Engine3D.aspect, 100, 10 * GISMath.EarthRadius);
         camera.object3D.z = 3;
         this.camera = camera;
-
-        let cameraController = camera.object3D.addComponent(HoverCameraController);
-        cameraController.minDistance = GISMath.EarthRadius * 0.8;// / 2.0;
-        cameraController.maxDistance = GISMath.EarthRadius * 2.0; // 6378137.0 * 6;
-        // cameraController.wheelStep = 0.0001;
-	    // cameraController.mouseLeftFactor = 3;
-        cameraController.rollSmooth = 2.0;
-        cameraController.smooth = false;
-        cameraController.setCamera(391.64495743327956, -31.271933788827532, cameraController.minDistance-100);
-        this.cameraController = cameraController;
-        // this.cameraController.onBeforeUpdate();
-        // this.cameraController.smooth = true;
 
         this.initScene(scene);
 
@@ -62,21 +55,41 @@ export class Sample_Earth {
             }
         } else {
             let obj = new Object3D();
+
+            let cameraController = this.camera.object3D.addComponent(GISCameraController);
+            cameraController.initCamera(GISMath.EarthRadius, obj);
+
             let er = obj.addComponent(EarthTileRenderer);
             // er.setLatLong(120.148732, 30.231006);
             scene.addChild(obj);
+
+
+            let position = GISMath.LngLatToEarthSurface(112.9603384873657, 28.167600241852714);
+            cameraController.poseCamera(position.normalize(GISMath.EarthRadius * 1.1));
+
+            let texture = await Engine3D.res.loadTexture("textures/grid.jpg", null, true) as BitmapTexture2D;
+            let earth = Object3DUtil.GetSingleSphere(GISMath.EarthRadius * 0.99, 0.2, 0.2, 0.2, 2000, 2000);
+            let mr = earth.getComponent(MeshRenderer);
+            mr.material.setTexture('baseMap', texture);
+            scene.addChild(earth);
+
+            let mat = mr.material as LitMaterial;
+            let uvRect = mat.getUniformV4('transformUV1');
+            let uvScale = 3;
+            function setUVScale(v: number) {
+                uvRect.z = uvRect.w = v * v;
+                mat.setUniformVector4(`transformUV1`, uvRect);
+            }
+            setUVScale(uvScale);
+
+            let materialUV = { uvScale: uvScale };
+            GUIHelp.add(materialUV, 'uvScale', 1, 30, 1).onChange(v => {
+                setUVScale(v);
+            });
         }
     }
 
     private latest: number = 0;
     private onRenderLoop() {
-        let distance = this.cameraController.distance;// Vector3.distance(Vector3.ZERO, this.camera.transform.worldPosition);
-        distance = Math.max(0, Math.floor(distance - GISMath.EarthRadius));
-        if (this.latest != distance) {
-            // this.cameraController.wheelStep = Math.max(Math.min(distance / 10000, 0.001), 0.00001);
-            this.cameraController.wheelStep = GISMath.MapNumberToInterval(distance, 0, GISMath.EarthRadius, 0.000001, 0.001);
-            this.latest = distance;
-            // console.warn(`distance:${distance}, wheelStep: ${this.cameraController.wheelStep}`);
-        }
     }
 }

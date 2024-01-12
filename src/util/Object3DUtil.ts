@@ -66,6 +66,7 @@ export class Object3DUtil {
         mat.baseColor = new Color(r, g, b, 1);
 
         let obj = new Object3D();
+        obj.rotationX = 90;
         let renderer = obj.addComponent(MeshRenderer);
         renderer.castGI = true;
         renderer.geometry = new SphereGeometry(radius, wSegment, hSegment);

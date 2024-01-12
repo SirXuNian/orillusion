@@ -1,18 +1,6 @@
+import { Camera3D, CameraUtil, ComponentBase, Engine3D, Matrix4, Object3D, Object3DUtil, PointerEvent3D, Ray, Vector2, Vector3, View3D, clamp } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Engine3D } from "../../Engine3D";
-import { Camera3D } from "../../core/Camera3D";
-import { View3D } from "../../core/View3D";
-import { Object3D } from "../../core/entities/Object3D";
-import { PointerEvent3D } from "../../event/eventConst/PointerEvent3D";
-import { clamp } from "../../math/MathUtil";
-import { Matrix4 } from "../../math/Matrix4";
-import { Vector2 } from "../../math/Vector2";
-import { Vector3 } from "../../math/Vector3";
-import { CameraUtil } from "../../util/CameraUtil";
-import { ComponentBase } from "../ComponentBase";
-import { Object3DUtil } from "../../util/Object3DUtil";
-import { Ray } from "../../math/Ray";
-import { GISMath } from "@samples/gis/GISMath";
+import { GISMath } from "./GISMath";
 
 class MousePickData {
     mouse: Vector2 = new Vector2();
@@ -153,8 +141,8 @@ export class GISCameraController extends ComponentBase {
     }
 
     private data: { lng: number, lat: number } = { lng: 0, lat: 0 };
-    private moveTestBall() {
-        let position = GISMath.LngLatToEarthSurface(this.data.lng, this.data.lat);
+    public moveTestBall(lng: number = this.data.lng, lat: number = this.data.lat) {
+        let position = GISMath.LngLatToEarthSurface(lng, lat);
         this._testSp.localPosition = position;
     }
 

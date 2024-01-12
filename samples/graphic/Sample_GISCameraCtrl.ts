@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, View3D, DirectLight, KelvinUtil, BitmapTexture2D, Matrix4, MeshRenderer, Object3DUtil, AxisObject, Camera3D, Vector3, DEGREES_TO_RADIANS, LitMaterial, SphereGeometry } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { GISCameraController } from "../../src/components/controller/GISCameraController";
+import { GISCameraController } from "@samples/gis/GISCameraController";
 import { GISMath } from "@samples/gis/GISMath";
 
 export class Sample_GISCameraCtrl {
