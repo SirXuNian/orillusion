@@ -121,6 +121,8 @@ export let EarthTileCompute = () => {
     const MaxLatitude:f32 = 85.05112878;
     const MinLongitude:f32 = -180;
     const MaxLongitude:f32 = 180;
+    const Min_Div_Max:f32 = 6356752.314245 / 6378137.0;
+    const Max_Div_Min:f32 = 6378137.0 / 6356752.314245;
 
     fn mapNumberToInterval(value:f32) ->  f32 {
         let minBound:f32 = -EPSG3857_MAX_BOUND;
@@ -139,11 +141,38 @@ export let EarthTileCompute = () => {
     fn spherify(e:f32, t:f32) -> vec3f {
         let n:f32 = (90.0 - t) / 180.0 * PI;
         let r:f32 = e / 180.0 * PI;
-        return vec3f(
-            EarthRadius * sin(n) * cos(r), 
-            PolarRadius * cos(n),
-            EarthRadius * sin(n) * sin(r)
+        let p = vec3f(
+            sin(n) * cos(r), 
+            cos(n),
+            sin(n) * sin(r)
         );
+        return CalcPolarSurface(p);
+    }
+
+
+   fn CalcPolarSurface(position: vec3f) ->vec3f {
+        let sphereY = position.y;
+        var ret:vec3f = position;
+        if (abs(sphereY) >= 0.999999999) {
+            ret *= PolarRadius;
+            return ret;
+        }
+        if (abs(sphereY) < 0.0000000001) {
+            ret.y = sphereY * Min_Div_Max;
+            ret *= EarthRadius;
+            return ret;
+        }
+
+        //sphere to polar surface
+        let xzLength = length(vec2f(ret.x, ret.z));
+        let tanAngle = sphereY / xzLength;
+
+        var scale = 1.0 / (tanAngle * tanAngle) + Max_Div_Min * Max_Div_Min;
+        scale = 1.0 / sqrt(scale);
+        scale = scale / abs(sphereY);
+        scale = EarthRadius * scale;
+        ret *= scale;
+        return ret;
     }
 
     fn drawFace(v1:vec3f, v2:vec3f, v3:vec3f, u1:vec2f, u2:vec2f, u3:vec2f) {

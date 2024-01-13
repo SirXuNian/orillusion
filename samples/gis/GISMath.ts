@@ -102,11 +102,16 @@ export class GISMath {
 
 
     public static CalcPolarSurface(position: Vector3, ret: Vector3): Vector3 {
-        position.normalize(this.EarthRadius);
+        position.normalize();
         const sphereY = position.y;
         ret.copyFrom(position);
-        if (Math.abs(position.x) < 1e-12 || Math.abs(position.z) < 1e-12) {
+        if (Math.abs(sphereY) >= 1 - 1e-12) {
+            ret.multiplyScalar(this.PolarRadius);
+            return ret;
+        }
+        if (Math.abs(sphereY) < 1e-12) {
             ret.y = sphereY * this.Min_Div_Max;
+            ret.multiplyScalar(this.EarthRadius);
             return ret;
         }
 
@@ -114,10 +119,10 @@ export class GISMath {
         const xzLength = Vector2.HELP_0.set(ret.x, ret.z).length();
         const tanAngle = sphereY / xzLength;
 
-        const ratio = 1 + (this.Min_Div_Max / tanAngle) * (this.Min_Div_Max / tanAngle);
-        let polarY = this.EarthRadius / Math.sqrt(ratio);
-        polarY *= this.Min_Div_Max;
-        const scale = polarY / sphereY;
+        let scale = 1.0 / (tanAngle * tanAngle) + this.Max_Div_Min * this.Max_Div_Min;
+        scale = 1 / Math.sqrt(scale);
+        scale = scale / Math.abs(sphereY);
+        scale = this.EarthRadius * scale;
         ret.multiplyScalar(scale);
         return ret;
     }
@@ -135,6 +140,7 @@ export class GISMath {
     }
 
 
+    private static help1Vec3: Vector3 = new Vector3();
     private static help2Vec3: Vector3 = new Vector3();
     private static help3Vec3: Vector3 = new Vector3();
     private static help4Vec3: Vector3 = new Vector3();
@@ -161,6 +167,7 @@ export class GISMath {
         let sinValue = crossPointLen / earthRaius;
         let edgeLength = Math.sqrt(1 - sinValue * sinValue) * earthRaius;
         let ret = crossPoint.add(ray.direction.clone().multiplyScalar(-edgeLength));
+
         ret.y *= this.Min_Div_Max;
         return ret;
     }
@@ -228,8 +235,8 @@ export class GISMath {
 
     public static spherify(e: number, t: number): Vector3 {
         const n = (90 - t) / 180 * Math.PI, r = e / 180 * Math.PI;
-        let result = Vector3.HELP_0;
-        result.set(GISMath.EarthRadius * Math.sin(n) * Math.cos(r), GISMath.PolarRadius * Math.cos(n), GISMath.EarthRadius * Math.sin(n) * Math.sin(r));
+        let result = Vector3.HELP_0.set(Math.sin(n) * Math.cos(r), Math.cos(n), Math.sin(n) * Math.sin(r));
+        this.CalcPolarSurface(result, this.help1Vec3);
         return result;
     }
 

@@ -74,11 +74,11 @@ export class Sample_Earth {
             earth.transform.scaleY = GISMath.Min_Div_Max;//1.02;
             let mr = earth.getComponent(MeshRenderer);
             mr.material.setTexture('baseMap', texture);
-            // scene.addChild(earth);
+            scene.addChild(earth);
 
             let mat = mr.material as LitMaterial;
             let uvRect = mat.getUniformV4('transformUV1');
-            let uvScale = 3;
+            let uvScale = 6;
             function setUVScale(v: number) {
                 uvRect.z = uvRect.w = v * v;
                 mat.setUniformVector4(`transformUV1`, uvRect);
