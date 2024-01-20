@@ -19,7 +19,7 @@ import { Time } from '../../../../util/Time';
 import { RTDescriptor } from '../../../graphics/webGpu/descriptor/RTDescriptor';
 import { WebGPUDescriptorCreator } from '../../../graphics/webGpu/descriptor/WebGPUDescriptorCreator';
 import { RendererPassState } from '../state/RendererPassState';
-import { PassType } from '../state/RendererType';
+import { PassType } from '../state/PassType';
 import { ILight } from '../../../../components/lights/ILight';
 import { Reference } from '../../../../util/Reference';
 
@@ -75,7 +75,7 @@ export class PointLightShadowRenderer extends RendererBase {
                 rendererPassStates[i] = rendererPassState;
                 depths[i] = depthTexture;
 
-                Engine3D.getRenderJob(view).postRenderer?.setDebugTexture([depthTexture]);
+                // Engine3D.getRenderJob(view).postRenderer?.setDebugTexture([depthTexture]);
             }
             cubeShadowMapInfo = {
                 cubeCamera: camera,
@@ -110,6 +110,7 @@ export class PointLightShadowRenderer extends RendererBase {
             let light = shadowLight[si];
             if (light.lightData.lightType == LightType.DirectionLight)
                 continue;
+            // if (light.lightData.castShadowIndex > -1 && (light.needUpdateShadow || this._forceUpdate || Time.frame < 5)) {
             if (light.lightData.castShadowIndex > -1 && (light.needUpdateShadow || this._forceUpdate || Time.frame < 5 || light.realTimeShadow)) {
                 light.needUpdateShadow = false;
 

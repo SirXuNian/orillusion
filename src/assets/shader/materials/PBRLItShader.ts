@@ -54,14 +54,15 @@ export let PBRLItShader: string = /*wgsl*/ `
 
         #if USE_SRGB_ALBEDO
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
-            ORI_ShadingInput.BaseColor = gammaToLiner(ORI_ShadingInput.BaseColor.rgb)  ;
+            // ORI_ShadingInput.BaseColor = sRGBToLinear(ORI_ShadingInput.BaseColor.rgb)  ;
             ORI_ShadingInput.BaseColor = vec4<f32>( ORI_ShadingInput.BaseColor * materialUniform.baseColor.rgb, ORI_ShadingInput.BaseColor.w * materialUniform.baseColor.a)  ;
         #else
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
-            ORI_ShadingInput.BaseColor = vec4f(gammaToLiner(ORI_ShadingInput.BaseColor.rgb) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.a)  ;
+            ORI_ShadingInput.BaseColor = vec4f(sRGBToLinear(ORI_ShadingInput.BaseColor.rgb) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.a)  ;
         #endif
 
-        var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
+        // var maskTex = pow(textureSample(maskMap, maskMapSampler, uv ),vec4f(1.0/2.2)) ;
+        var maskTex = textureSample(maskMap, maskMapSampler, uv );
        
         #if USE_ALPHA_A
             ORI_ShadingInput.BaseColor.a =  ORI_ShadingInput.BaseColor.a * (maskTex.a) ;

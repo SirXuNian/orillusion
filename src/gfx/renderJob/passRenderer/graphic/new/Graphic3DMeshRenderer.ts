@@ -1,5 +1,5 @@
 import { Vector2, mergeFunctions } from "../../../../..";
-import { graphicTrailCompute } from "../../../../../assets/shader/graphic/GraphicTrailCompute";
+import { graphicTrailCompute } from "../../../../../assets/shader/graphic/GraphicTrailCompute2";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
 import { View3D } from "../../../../../core/View3D";
 import { Object3D } from "../../../../../core/entities/Object3D";

@@ -265,13 +265,6 @@ export let Hair_frag: string = /*wgsl*/ `
               fHairTransmittanceData.bUseLegacyAbsorption = false ;
 
               //use shadow visible backlit
-              // var shadow = 0.0 ;
-              // if(light.castShadow>=0){
-              //     #if USE_SHADOWMAPING
-              //       shadow = shadowStrut.directShadowVisibility[i32(light.castShadow)] ; 
-              //     #endif
-              // }
-
               specColor = hairShading(light,fragData.V, ORI_ShadingInput.HairNormal , 1.0 ,fHairTransmittanceData,1.0,materialUniform.area,vec2f(0.0));
           }
           case SpotLightType: {

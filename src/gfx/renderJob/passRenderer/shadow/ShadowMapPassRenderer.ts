@@ -14,7 +14,7 @@ import { ShadowLightsCollect } from "../../collect/ShadowLightsCollect";
 import { RTFrame } from "../../frame/RTFrame";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RendererPassState } from "../state/RendererPassState";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { Reference } from "../../../../util/Reference";

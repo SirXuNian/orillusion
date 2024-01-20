@@ -20,7 +20,7 @@ export class ShaderState {
     public acceptGI: boolean = false;
     public acceptShadow: boolean = false;
     public castShadow: boolean = false;
-    public castReflection: boolean = false;
+    public castReflection: boolean = true;
     public receiveEnv: boolean = false;
     public renderLayer: number = 1000;
     public renderOrder: number = 2000;

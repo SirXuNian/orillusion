@@ -4,7 +4,7 @@ import { GlassShader } from '../assets/shader/materials/GlassShader';
 import { Material } from './Material';
 import { Shader } from '../gfx/graphics/webGpu/shader/Shader';
 import { RenderShaderPass } from '../gfx/graphics/webGpu/shader/RenderShaderPass';
-import { PassType } from '../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../gfx/renderJob/passRenderer/state/PassType';
 
 /**
  * GlassMaterial

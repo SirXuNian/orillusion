@@ -1,7 +1,7 @@
 import Ammo from "@orillusion/ammo/ammo";
 import { Scene3D, Object3D, Engine3D, View3D, Camera3D, HoverCameraController, AtmosphericComponent, Vector3, webGPUContext, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, ColorGradient, Color, PointerEvent3D, CameraUtil, SphereGeometry, InputSystem, Time, lerp, lerpVector3 } from "@orillusion/core";
 import { RigidBody3D } from "./helps/components/RigidBody3D";
-import { PhysicTransformUtils, btVector3 } from "./helps/PhysicTransformUtils";
+import { PhysicTransformUtils, BtVector3 } from "./helps/PhysicTransformUtils";
 import { PhysicsWorld } from "./helps/components/PhysicsWorld";
 
 export class Sample_Physic_Rope {
@@ -21,7 +21,7 @@ export class Sample_Physic_Rope {
         Engine3D.setting.shadow.shadowSize = 2048;
         Engine3D.setting.shadow.shadowBound = 150;
 
-        await Ammo(Ammo);
+        await Ammo.bind(window)(Ammo);
         await Engine3D.init({ renderLoop: () => this.loop() });
 
         let cameraObj = new Object3D();
@@ -117,7 +117,7 @@ export class Sample_Physic_Rope {
         var softBodyHelpers = new Ammo.btSoftBodyHelpers();
         var ropeStart = new Vector3(0, 13.6, 12);
         var ropeEnd = new Vector3(0, 13.6 + ropeLength, 12);
-        this.ropeSoftBody = softBodyHelpers.CreateRope(physicsWorld.getSoftWorldInfo(), btVector3(ropeStart), btVector3(ropeEnd), ropeNumSegments - 1, 0);
+        this.ropeSoftBody = softBodyHelpers.CreateRope(physicsWorld.getSoftWorldInfo(), BtVector3(ropeStart), BtVector3(ropeEnd), ropeNumSegments - 1, 0);
         var sbConfig = this.ropeSoftBody.get_m_cfg();
         sbConfig.set_viterations(10);
         sbConfig.set_piterations(10);

@@ -25,6 +25,7 @@ import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { Matrix4 } from './math/Matrix4';
 import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
 import { PostProcessingComponent } from './components/post/PostProcessingComponent';
+import { GBufferFrame } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -139,6 +140,7 @@ export class Engine3D {
             drawTrMax: Number.MAX_SAFE_INTEGER,
             zPrePass: false,
             useLogDepth: false,
+            useCompressGBuffer: false,
             gi: false,
             postProcessing: {
                 bloom: {
@@ -296,6 +298,13 @@ export class Engine3D {
         },
         loader: {
             numConcurrent: 20,
+        },
+        reflectionSetting: {
+            reflectionProbeMaxCount: 8,
+            reflectionProbeSize: 256,
+            width: 256 * 6,
+            height: 8 * 256,
+            enable: true
         }
     };
 
@@ -328,6 +337,17 @@ export class Engine3D {
         await WasmMatrix.init(Matrix4.allocCount);
 
         await webGPUContext.init(descriptor.canvasConfig);
+
+        //****pre compute setting****/
+        this.setting.reflectionSetting.width = this.setting.reflectionSetting.reflectionProbeSize * 6;
+        this.setting.reflectionSetting.height = this.setting.reflectionSetting.reflectionProbeSize * this.setting.reflectionSetting.reflectionProbeMaxCount;
+        GBufferFrame.getGBufferFrame(
+            GBufferFrame.reflections_GBuffer,
+            this.setting.reflectionSetting.width,
+            this.setting.reflectionSetting.height,
+            false
+        );
+        //****pre compute setting****/
 
         ShaderLib.init();
 

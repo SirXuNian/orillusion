@@ -19,7 +19,7 @@ import { WorldMatrixUniform } from './core/common/WorldMatrixUniform';
 import { FastMathShader } from './math/FastMathShader';
 import { NormalMap_frag } from './materials/program/NormalMap_frag';
 import { FragmentVarying } from './core/struct/FragmentVarying';
-import { ColorPassFragmentOutput } from './core/struct/ColorPassFragmentOutput';
+import { FragmentOutput } from './core/struct/FragmentOutput';
 import { ShadingInput } from './core/struct/ShadingInput';
 import { IESProfiles_frag } from './lighting/IESProfiles_frag';
 import { ShadowMapping_frag } from './materials/program/ShadowMapping_frag';
@@ -45,6 +45,10 @@ import { GBuffer_pass } from './core/pass/GBuffer_pass';
 import { castPointShadowMap_vert, directionShadowCastMap_frag, shadowCastMap_frag, shadowCastMap_vert } from './core/pass/CastShadow_pass';
 import { ZPassShader_vs } from './core/pass/ZPassShader_vs';
 import { ZPassShader_fs } from './core/pass/ZPassShader_fs';
+import { PixeShaderUtil } from './utils/PixeShaderUtil';
+import { GBufferStand } from './core/common/GBufferStand';
+import { ReflectionShader_shader } from './materials/ReflectionShader_shader';
+import { ReflectionCG } from './env/ReflectionCG';
 
 /**
  * @internal
@@ -54,6 +58,8 @@ export class ShaderLib {
     public static init() {
         ShaderLib.register('MathShader', MathShader);
         ShaderLib.register('FastMathShader', FastMathShader);
+        ShaderLib.register("PixeShaderUtil", PixeShaderUtil);
+        ShaderLib.register("GBufferStand", GBufferStand);
 
         ShaderLib.register('MatrixShader', MatrixShader);
 
@@ -73,7 +79,7 @@ export class ShaderLib {
 
         ShaderLib.register('Common_frag', Common_frag);
         ShaderLib.register('FragmentVarying', FragmentVarying);
-        ShaderLib.register('ColorPassFragmentOutput', ColorPassFragmentOutput);
+        ShaderLib.register('FragmentOutput', FragmentOutput);
 
         ShaderLib.register('ClusterLight', ClusterLight);
         ShaderLib.register('ShadingInput', ShadingInput);
@@ -87,13 +93,15 @@ export class ShaderLib {
         ShaderLib.register('EnvMap_frag', EnvMap_frag);
 
         ShaderLib.register('ColorUtil_frag', ColorUtil);
-        ShaderLib.register('ColorUtil', ColorUtil);
         ShaderLib.register('BRDF_frag', BRDF_frag);
         ShaderLib.register('Hair_frag', Hair_frag);
         ShaderLib.register('BxDF_frag', BxDF_frag);
         ShaderLib.register('BsDF_frag', BsDF_frag);
         ShaderLib.register('UnLit_frag', UnLit_frag);
         ShaderLib.register('UnLit', UnLit);
+
+        ShaderLib.register('ReflectionCG', ReflectionCG);
+        ShaderLib.register('ReflectionShader', ReflectionShader_shader);
         ShaderLib.register('Clearcoat_frag', Clearcoat_frag);
         ShaderLib.register('LitShader', Lit_shader);
         ShaderLib.register('PBRLItShader', PBRLItShader);

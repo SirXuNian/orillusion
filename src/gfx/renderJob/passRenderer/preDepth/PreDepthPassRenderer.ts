@@ -14,7 +14,7 @@ import { RTResourceMap } from "../../frame/RTResourceMap";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 import { ZCullingCompute } from "./ZCullingCompute";
 
 /**

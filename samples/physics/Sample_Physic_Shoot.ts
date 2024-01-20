@@ -4,7 +4,7 @@ import { RigidBody3D } from "./helps/components/RigidBody3D";
 import { PhysicTransformUtils } from "./helps/PhysicTransformUtils";
 import { PhysicsWorld } from "./helps/components/PhysicsWorld";
 
-export class Sample_Physic2 {
+export class Sample_Physic_Shoot {
     private scene: Scene3D;
     view: View3D;
     camera: Camera3D;
@@ -16,7 +16,7 @@ export class Sample_Physic2 {
         Engine3D.setting.shadow.shadowSize = 2048;
         Engine3D.setting.shadow.shadowBound = 150;
 
-        await Ammo(Ammo);
+        await Ammo.bind(window)(Ammo);
         await Engine3D.init({ renderLoop: () => this.loop() });
 
         let cameraObj = new Object3D();
@@ -47,20 +47,13 @@ export class Sample_Physic2 {
         scene.addChild(lightObj3D);
 
         let physicWorld = scene.addComponent(PhysicsWorld);
+        physicWorld.createWorld();
 
-        let floorObj = new Object3D();
-        let mr = floorObj.addComponent(MeshRenderer);
-        mr.geometry = new BoxGeometry(100, 1, 100);
-        mr.material = new LitMaterial();
-        let floorRigibody3D = floorObj.addComponent(RigidBody3D);
-        PhysicTransformUtils.applyBoxRigidBody(
-            floorRigibody3D,
-            Vector3.ZERO,
-            new Vector3(100, 1, 100),
-            new Vector3(0, 0, 0),
-            0,
-        );
-        scene.addChild(floorObj);
+        this.createPhysicBox(new Vector3(0, 0, 0), new Vector3(100, 1, 100), 0);
+        this.createPhysicBox(new Vector3(-50, 0, 0), new Vector3(1, 25, 100), 0);
+        this.createPhysicBox(new Vector3(50, 0, 0), new Vector3(1, 25, 100), 0);
+        this.createPhysicBox(new Vector3(0, 0, -50), new Vector3(100, 25, 1), 0);
+        this.createPhysicBox(new Vector3(0, 0, 50), new Vector3(100, 25, 1), 0);
 
         let colorGradient = new ColorGradient([
             new Color(255 / 255, 0, 0),
@@ -139,5 +132,21 @@ export class Sample_Physic2 {
 
     private loop() {
         // console.log(`loop`);
+    }
+
+    private createPhysicBox(pos: Vector3, size: Vector3, mass: number) {
+        let cube = new Object3D();
+        let mr = cube.addComponent(MeshRenderer);
+        mr.geometry = new BoxGeometry(size.x, size.y, size.z);
+        mr.material = new LitMaterial();
+        let floorRigibody3D = cube.addComponent(RigidBody3D);
+        PhysicTransformUtils.applyBoxRigidBody(
+            floorRigibody3D,
+            pos,
+            size,
+            new Vector3(0, 0, 0),
+            mass,
+        );
+        this.scene.addChild(cube);
     }
 }

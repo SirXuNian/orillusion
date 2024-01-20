@@ -10,7 +10,7 @@ import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RenderContext } from "../RenderContext";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 
 /**
  *  @internal

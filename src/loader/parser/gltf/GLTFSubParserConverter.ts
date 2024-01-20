@@ -180,7 +180,8 @@ export class GLTFSubParserConverter {
                     let physicMaterial = (newMat = this.applyMaterialExtensions(primitive.material, newMat));
                     if (`enableBlend` in primitive.material) {
                         if (primitive.material[`enableBlend`]) {
-                            physicMaterial.blendMode = BlendMode.SOFT_ADD;
+                            physicMaterial.blendMode = BlendMode.ALPHA;
+                            physicMaterial.castShadow = false;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
                         }
@@ -190,6 +191,7 @@ export class GLTFSubParserConverter {
                         physicMaterial.setUniformFloat("alphaCutoff", alphaCutoff);
                         physicMaterial.blendMode = BlendMode.NORMAL;
                         physicMaterial.transparent = true;
+                        // physicMaterial.castShadow = false;
                         // physicMaterial.depthWriteEnabled = false;
                     }
 
@@ -359,6 +361,14 @@ export class GLTFSubParserConverter {
     }
 
     private createGeometryBase(name: string, attribArrays: any, primitive: any): GeometryBase {
+        if ('indices' in attribArrays) {
+            let bigIndices = attribArrays[`indices`].data.length > 65534;
+            if (bigIndices) {
+                attribArrays[`indices`].data = new Uint32Array(attribArrays[`indices`].data);
+            } else {
+                attribArrays[`indices`].data = new Uint16Array(attribArrays[`indices`].data);
+            }
+        }
         let geometry = new GeometryBase();
         geometry.name = name;
 

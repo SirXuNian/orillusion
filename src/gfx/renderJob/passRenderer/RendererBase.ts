@@ -13,7 +13,7 @@ import { EntityCollect } from "../collect/EntityCollect";
 import { RTFrame } from "../frame/RTFrame";
 import { OcclusionSystem } from "../occlusion/OcclusionSystem";
 import { RendererPassState } from "./state/RendererPassState";
-import { PassType } from "./state/RendererType";
+import { PassType } from "./state/PassType";
 import { RenderContext } from "./RenderContext";
 import { ClusterLightingBuffer } from "./cluster/ClusterLightingBuffer";
 import { RenderTexture } from "../../..";
@@ -62,14 +62,11 @@ export class RendererBase extends CEventDispatcher {
         }
 
         this.renderContext = new RenderContext(rtFrame);
-
     }
 
     public setIrradiance(probeIrradianceMap: RenderTexture, probeDepthMap: RenderTexture) {
         this.rendererPassState.irradianceBuffer = [probeIrradianceMap, probeDepthMap];
     }
-
-
 
     public compute(view: View3D, occlusionSystem: OcclusionSystem) { }
 
@@ -196,34 +193,6 @@ export class RendererBase extends CEventDispatcher {
             if (!renderNode.enable)
                 continue;
             renderNode.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
-        }
-    }
-
-    public setDebugTexture(textures: Texture[]) {
-        for (let i = 0; i < textures.length; i++) {
-            let tex = textures[i];
-            let vs = "Quad_vert_wgsl";
-            let fs = "Quad_frag_wgsl";
-            switch (tex.format) {
-                case GPUTextureFormat.rgba8sint:
-                case GPUTextureFormat.rgba8uint:
-                case GPUTextureFormat.rgba8unorm:
-                case GPUTextureFormat.rgba16float:
-                case GPUTextureFormat.rgba32float:
-                    fs = `Quad_frag_wgsl`;
-                    break;
-
-                case GPUTextureFormat.depth24plus:
-                case GPUTextureFormat.depth32float:
-                    fs = `Quad_depth2d_frag_wgsl`;
-                    if (tex.textureBindingLayout.viewDimension == `cube`) {
-                        fs = `Quad_depthCube_frag_wgsl`;
-                    }
-                    break;
-            }
-            let viewQuad = new ViewQuad(vs, fs, new RTFrame([], []));
-            this.debugTextures.push(textures[i]);
-            this.debugViewQuads.push(viewQuad);
         }
     }
 }

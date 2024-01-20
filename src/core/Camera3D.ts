@@ -66,6 +66,7 @@ export class Camera3D extends ComponentBase {
     private _projectionMatrixInv: Matrix4 = new Matrix4();
     private _projectionMatrix: Matrix4 = new Matrix4();
     private _viewMatrix: Matrix4 = new Matrix4();
+    private _viewMatrixInv: Matrix4 = new Matrix4();
     private _unprojection: Matrix4 = new Matrix4();
     private _pvMatrixInv: Matrix4 = new Matrix4();
     private _pvMatrix: Matrix4 = new Matrix4();
@@ -73,6 +74,7 @@ export class Camera3D extends ComponentBase {
     private _halfh: number;
     private _ray: Ray;
     private _enableCSM: boolean = false;
+    public mainCamera: Camera3D;
 
     /**
      * @internal
@@ -296,6 +298,27 @@ export class Camera3D extends ComponentBase {
         let matrix = this._pvMatrixInv.copyFrom(this.pvMatrix);
         matrix.invert();
         return matrix;
+    }
+
+    public get vMatrixInv(): Matrix4 {
+        let matrix = this._viewMatrixInv.copyFrom(this.viewMatrix);
+        matrix.invert();
+        return matrix;
+    }
+
+    public get cameraToWorld(): Matrix4 {
+        let cameraToWorld = Matrix4.helpMatrix;
+        cameraToWorld.identity();
+        cameraToWorld.copyFrom(this.projectionMatrixInv);
+        cameraToWorld.multiply(this.vMatrixInv);
+        return cameraToWorld;
+    }
+
+    public get ndcToView(): Matrix4 {
+        let cameraToWorld = Matrix4.helpMatrix;
+        cameraToWorld.identity();
+        cameraToWorld.copyFrom(this.projectionMatrixInv);
+        return cameraToWorld;
     }
 
     /**

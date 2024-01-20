@@ -17,6 +17,8 @@ import { PostBase } from '../post/PostBase';
 import { RendererBase } from '../passRenderer/RendererBase';
 import { Ctor } from '../../../util/Global';
 import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
+import { ReflectionRenderer } from '../passRenderer/cubeRenderer/ReflectionRenderer';
+import { PassType } from '../passRenderer/state/PassType';
 
 /**
  * render jobs 
@@ -57,6 +59,11 @@ export class RendererJob {
     /**
      * @internal
      */
+    public reflectionRenderer: ReflectionRenderer;
+
+    /**
+     * @internal
+     */
     public occlusionSystem: OcclusionSystem;
 
     /**
@@ -67,7 +74,10 @@ export class RendererJob {
     /**
        * @internal
        */
-    public colorPassRenderer: ColorPassRenderer;
+    public get colorPassRenderer(): ColorPassRenderer {
+        let renderer = this.rendererMap.getRenderer(PassType.COLOR);
+        return renderer as ColorPassRenderer;
+    }
 
     /**
      * @internal
@@ -89,6 +99,8 @@ export class RendererJob {
         this.occlusionSystem = new OcclusionSystem();
 
         this.clusterLightingRender = this.addRenderer(ClusterLightingRender, view);
+
+        this.reflectionRenderer = this.addRenderer(ReflectionRenderer, view);
 
         if (Engine3D.setting.render.zPrePass) {
             this.depthPassRenderer = this.addRenderer(PreDepthPassRenderer);
@@ -165,7 +177,6 @@ export class RendererJob {
      */
     public addPost(post: PostBase): PostBase | PostBase[] {
         if (!this.postRenderer) {
-            GBufferFrame.bufferTexture = true;
             this.enablePost(GBufferFrame.getGBufferFrame('ColorPassGBuffer'));
         }
 
@@ -195,11 +206,10 @@ export class RendererJob {
     public renderFrame() {
         let view = this._view;
 
-
         GlobalBindGroup.getLightEntries(view.scene).update(view);
+        GlobalBindGroup.getReflectionEntries(view.scene).update(view);
 
         this.occlusionSystem.update(view.camera, view.scene);
-
         this.clusterLightingRender.render(view, this.occlusionSystem);
 
         if (this.shadowMapPassRenderer) {

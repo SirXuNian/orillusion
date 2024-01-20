@@ -1,4 +1,4 @@
-import { Vector3 } from "../../../../..";
+import { ProfilerUtil, Vector3 } from "../../../../..";
 import { Engine3D } from "../../../../../Engine3D";
 import { Camera3D } from "../../../../../core/Camera3D";
 import { CSM } from "../../../../../core/csm/CSM";
@@ -17,6 +17,7 @@ import { MatrixBindGroup } from "./MatrixBindGroup";
  * @group GFX
  */
 export class GlobalUniformGroup {
+
     public uuid: string;
     public usage: number;
     public globalBindGroup: GPUBindGroup;
@@ -80,13 +81,12 @@ export class GlobalUniformGroup {
         });
     }
 
-
-
     public setCamera(camera: Camera3D) {
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_cameraWorldMatrix`, camera.transform.worldMatrix);
         this.uniformGPUBuffer.setMatrix(`pvMatrixInv`, camera.projectionMatrixInv);
+        this.uniformGPUBuffer.setMatrix(`viewToWorld`, camera.cameraToWorld);
 
         let shadowLightList = ShadowLightsCollect.getDirectShadowLightWhichScene(camera.transform.scene3D);
 
@@ -114,6 +114,17 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setFloat32Array(`csmShadowBias`, this.csmShadowBias);
         this.uniformGPUBuffer.setFloat32Array(`csmMatrix`, this.csmMatrixRaw);
         this.uniformGPUBuffer.setFloat32Array(`shadowLights`, this.shadowLights);
+
+        let reflectionSetting = Engine3D.setting.reflectionSetting;
+        this.uniformGPUBuffer.setFloat(`reflectionProbeSize`, reflectionSetting.reflectionProbeSize);
+        this.uniformGPUBuffer.setFloat(`reflectionProbeMaxCount`, reflectionSetting.reflectionProbeMaxCount);
+        this.uniformGPUBuffer.setFloat(`reflectionMapWidth`, reflectionSetting.width);
+        this.uniformGPUBuffer.setFloat(`reflectionMapHeight`, reflectionSetting.height);
+
+        this.uniformGPUBuffer.setFloat(`test1`, ProfilerUtil.testObj.testValue1);
+        this.uniformGPUBuffer.setFloat(`test2`, ProfilerUtil.testObj.testValue2);
+        this.uniformGPUBuffer.setFloat(`test3`, ProfilerUtil.testObj.testValue3);
+        this.uniformGPUBuffer.setFloat(`test4`, ProfilerUtil.testObj.testValue4);
 
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
@@ -146,19 +157,10 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setInt32(`nPointShadowStart`, this.pointShadowStart);
         this.uniformGPUBuffer.setInt32(`nPointShadowEnd`, this.pointShadowEnd);
 
-        this.uniformGPUBuffer.setInt32(`empty1`, 0);
-        this.uniformGPUBuffer.setInt32(`empty2`, 0);
-        this.uniformGPUBuffer.setInt32(`empty3`, 0);
+        this.uniformGPUBuffer.setVector3(`cameraForward`, camera.transform.forward);
+
 
         this.uniformGPUBuffer.setVector4Array(`frustumPlanes`, camera.frustum.planes);
-        // this.uniformGPUBuffer.setVector4Array(`frustumPlanes`, [
-        //     new Vector3(0.0, 0.0, 0.0, 0.0),
-        //     new Vector3(1.0, 0.0, 0.0, 0.0),
-        //     new Vector3(1.0, 1.0, 0.0, 0.0),
-        //     new Vector3(0.0, 1.0, 0.0, 0.0),
-        //     new Vector3(2.0, 0.0, 0.0, 0.0),
-        //     new Vector3(2.0, 1.0, 0.0, 0.0),
-        // ]);
         this.uniformGPUBuffer.apply();
     }
 
@@ -168,6 +170,7 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_pvMatrix`, camera.pvMatrix);
         this.uniformGPUBuffer.setMatrix(`pvMatrixInv`, camera.projectionMatrixInv);
+        this.uniformGPUBuffer.setMatrix(`viewToWorld`, camera.cameraToWorld);
         this.csmShadowBias.fill(0.0001);
         this.shadowMatrixRaw.fill(0);
         this.csmMatrixRaw.fill(0);
@@ -213,8 +216,4 @@ export class GlobalUniformGroup {
 
         this.uniformGPUBuffer.apply();
     }
-
-    public setShadowLight() { }
-
-
 }

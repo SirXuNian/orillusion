@@ -1,8 +1,8 @@
 import Ammo from "@orillusion/ammo/ammo";
-import { ComponentBase, Quaternion, Vector3 } from "@orillusion/core";
+import { ComponentBase, PlaneGeometry, Quaternion, Vector3 } from "@orillusion/core";
 import { PhysicsWorld } from "./PhysicsWorld";
 import { PhysicTransformUtils } from "../PhysicTransformUtils";
-import { CollisionFilterGroups } from "../PhysicType";
+import { CollisionFilterGroups } from "../../../../packages/physics/PhysicType";
 
 export class RigidBody3D extends ComponentBase {
     public btBody: Ammo.btCollisionObject | Ammo.btRigidBody;
@@ -19,11 +19,16 @@ export class RigidBody3D extends ComponentBase {
     public rbInfo: Ammo.btRigidBodyConstructionInfo;
     public useCollision: boolean = true;
     private _forceChange = false;
+    geometry: PlaneGeometry;
     public init(param?: any): void {
     }
 
     public get rigidBody() {
         return this.btBody as Ammo.btRigidBody;
+    }
+
+    public get softBody() {
+        return this.btBody as Ammo.btSoftBody;
     }
 
     public setPosition(x: number | Vector3, y?: number, z?: number) {
@@ -68,12 +73,29 @@ export class RigidBody3D extends ComponentBase {
 
     public destroy(force?: boolean): void {
         super.destroy(force);
-        Ammo.destroy(this.btTransform);
-        Ammo.destroy(this.localInertia);
-        Ammo.destroy(this.btShape);
-        Ammo.destroy(this.motionState);
-        Ammo.destroy(this.rbInfo);
-        Ammo.destroy(this.btBody);
+
+        // if (this.btTransform) {
+        //     Ammo.destroy(this.btTransform);
+        // }
+        // if (this.localInertia) {
+        //     Ammo.destroy(this.localInertia);
+        // }
+        // if (this.btShape) {
+        //     Ammo.destroy(this.btShape);
+        // }
+        // if (this.motionState) {
+        //     Ammo.destroy(this.motionState);
+        // }
+        // if (this.rbInfo) {
+        //     Ammo.destroy(this.rbInfo);
+        // }
+        // if (this.btBody) {
+        //     Ammo.destroy(this.btBody.getCollisionShape());
+        //     Ammo.destroy(this.btBody);
+        // }
+        // if (this.btShape) {
+        //     Ammo.destroy(this.btShape);
+        // }
 
         this.btTransform = null;
         this.localInertia = null;

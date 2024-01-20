@@ -4,20 +4,28 @@ import { BoxGeometry } from '../shape/BoxGeometry';
 import { SphereGeometry } from '../shape/SphereGeometry';
 import { LitMaterial } from '../materials/LitMaterial';
 import { Color } from '../math/Color';
-import { Material } from '..';
+import { BitmapTexture2D, BlendMode, Material, PlaneGeometry, Texture, Vector3 } from '..';
 
 export class Object3DUtil {
     private static boxGeo: BoxGeometry;
+    private static planeGeo: PlaneGeometry;
     private static sphere: SphereGeometry;
     private static material: LitMaterial;
+
+    private static materialMap: Map<Texture, LitMaterial>;
 
     private static initHeap() {
         if (!this.boxGeo)
             this.boxGeo = new BoxGeometry();
+        if (!this.planeGeo)
+            this.planeGeo = new PlaneGeometry(1, 1, 1, 1, Vector3.UP);
         if (!this.sphere)
             this.sphere = new SphereGeometry(1, 35, 35);
         if (!this.material) {
             this.material = new LitMaterial();
+        }
+        if (!this.materialMap) {
+            this.materialMap = new Map<Texture, LitMaterial>();
         }
     }
 
@@ -33,12 +41,35 @@ export class Object3DUtil {
 
     public static GetCube() {
         this.initHeap();
-
         let obj = new Object3D();
         let renderer = obj.addComponent(MeshRenderer);
         renderer.geometry = this.boxGeo;
         renderer.material = this.material.clone();
         renderer.castShadow = true;
+        return obj;
+    }
+
+    public static GetMaterial(tex: Texture) {
+        let mat = this.materialMap.get(tex);
+        if (!mat) {
+            mat = new LitMaterial();
+            mat.baseMap = tex;
+            this.materialMap.set(tex, mat);
+        }
+        return mat.clone();
+    }
+
+    public static GetPlane(tex: Texture) {
+        this.initHeap();
+        let obj = new Object3D();
+        let renderer = obj.addComponent(MeshRenderer);
+        renderer.geometry = this.planeGeo;
+        let cloneMat = this.GetMaterial(tex);
+        cloneMat.blendMode = BlendMode.ADD;
+        cloneMat.castShadow = false;
+        renderer.material = cloneMat;
+        renderer.castGI = false;
+        renderer.castReflection = false;
         return obj;
     }
 

@@ -9,15 +9,20 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
     @group(1) @binding(auto) var pointShadowMapSampler: sampler;
     @group(1) @binding(auto) var pointShadowMap: texture_depth_cube_array;
 
-    struct ShadowStruct{
-      directShadowVisibility: array<f32, 8>,
-      pointShadows: array<f32, 8>,
-    }
-    var<private> shadowStrut: ShadowStruct ;
+    // struct ShadowStruct{
+    //   directShadowVisibility: array<f32, 8>,
+    //   pointShadows: array<f32, 8>,
+    //   visibility:f32
+    // }
+
+    var<private> directShadowVisibility: array<f32, 8>;
+    var<private> pointShadows: array<f32, 8>;
+    var<private> shadowWeight: f32 = 1.0 ;
 
     fn useShadow(){
-        shadowStrut.directShadowVisibility = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
-        shadowStrut.pointShadows = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
+        directShadowVisibility = array<f32, 8>( 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0) ;
+        // pointShadows = array<f32, 8>( 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0) ;
+        pointShadows = array<f32, 8>(1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
         directShadowMaping(globalUniform.shadowBias);
         pointShadowMapCompare(globalUniform.pointShadowBias);
     }
@@ -37,6 +42,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
         let enableCSM:bool = globalUniform.enableCSM > 0.5;
         for (var i: i32 = 0; i < dirCount ; i = i + 1) {
           if( i >= globalUniform.nDirShadowStart && i < globalUniform.nDirShadowEnd ){
+          // if( i >= 0 && i < 1 ){
             let ldx = globalUniform.shadowLights[u32(i) / 4u][u32(i) % 4u];
             let light = lightBuffer[u32(ldx)] ;
             var shadowIndex = i32(light.castShadow);
@@ -48,7 +54,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
                 visibility = 0.0;
                 var validCount = 0;
                 for(var csm:i32 = 0; csm < csmCount; csm ++){
-                  var csmShadowBias = globalUniform.csmShadowBias[csm];
+                  var csmShadowBias = globalUniform.csmShadowBias[csm] * shadowBias;
                   shadowMatrix = globalUniform.csmMatrix[csm];
                   let csmShadowResult = directShadowMapingIndex(light, shadowMatrix, csm, csmShadowBias);
                   if(csmShadowResult.y < 0.5){
@@ -94,7 +100,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
               shadowMatrix = globalUniform.shadowMatrix[shadowIndex];
               visibility = directShadowMapingIndex(light, shadowMatrix, shadowIndex, shadowBias).x;
             #endif 
-            shadowStrut.directShadowVisibility[i] = visibility;
+            directShadowVisibility[i] = visibility;
           }
         }
       #endif
@@ -120,9 +126,13 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
           isOutSideArea = 0.0;
           var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
           var totalWeight = 0.0;
-          var NoL = (dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(-light.direction)));
-          let v = max(NoL, 0.0) ;
-          var bias = shadowBias / v;
+          // var NoL = (dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(-light.direction)));
+          // let v = max(NoL, 0.0) ;
+          // var bias = max(0.05 * (dot(normalize(fragData.N), normalize(-light.direction)) ), -shadowBias); 
+          var bias = -0.005 * max(dot(fragData.N, -light.direction) , 0.0 ); 
+          bias = clamp(bias, 0,0.01) + -shadowBias;
+
+          // var bias = shadowBias / v;
           for (var y = -1; y <= 1; y++) {
             for (var x = -1; x <= 1; x++) {
               var offset = vec2<f32>(f32(x), f32(y)) * uvOnePixel;
@@ -136,7 +146,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
             }
           }
           visibility /= totalWeight;
-          visibility += 0.001;
+          // visibility += 0.001;
         }
       #endif
       return vec4<f32>(visibility, isOutSideArea, varying_shadowUV);
@@ -201,7 +211,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
           #endif
               for (var j = 0; j < pointCount ; j+=1 ) {
                   if(i32(light.castShadow) == j){
-                    shadowStrut.pointShadows[j] = 1.0 - shadow ;
+                    pointShadows[j] = 1.0 - shadow ;
                   }
               }
           #endif

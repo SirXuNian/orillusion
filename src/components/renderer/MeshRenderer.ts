@@ -4,7 +4,7 @@ import { ClusterLightingBuffer } from '../../gfx/renderJob/passRenderer/cluster/
 import { GeometryBase } from '../../core/geometry/GeometryBase';
 import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
 import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
-import { PassType } from '../../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../../gfx/renderJob/passRenderer/state/PassType';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
 import { EditorInspector, RegisterComponent } from '../../util/SerializeDecoration';

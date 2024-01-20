@@ -7,7 +7,7 @@ import { RenderNode } from "./RenderNode";
 import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
 import { View3D } from "../../core/View3D";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
-import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../gfx/renderJob/passRenderer/state/PassType";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 
 export class InstanceDrawComponent extends RenderNode {

@@ -16,7 +16,7 @@ export class Sample_Physic {
         Engine3D.setting.shadow.shadowSize = 2048;
         Engine3D.setting.shadow.shadowBound = 150;
 
-        await Ammo(Ammo);
+        await Ammo.bind(window)(Ammo);
         await Engine3D.init({ renderLoop: () => this.loop() });
 
         let cameraObj = new Object3D();
@@ -47,6 +47,7 @@ export class Sample_Physic {
         scene.addChild(lightObj3D);
 
         let physicWorld = scene.addComponent(PhysicsWorld);
+        physicWorld.createWorld();
 
         let floorObj = new Object3D();
         let mr = floorObj.addComponent(MeshRenderer);

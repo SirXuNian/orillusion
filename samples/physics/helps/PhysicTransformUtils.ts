@@ -1,6 +1,6 @@
-import Ammo from "@orillusion/ammo/ammo";
-import { Object3D, Quaternion, Vector3, Vector4 } from "@orillusion/core";
+import { Color, Object3D, Quaternion, Vector3, Vector4 } from "@orillusion/core";
 import { RigidBody3D } from "./components/RigidBody3D";
+import Ammo from "@orillusion/ammo";
 export class PhysicTransformUtils {
 
     public static getBtVector3(rayDirection: Vector3): Ammo.btVector3 {
@@ -26,13 +26,23 @@ export class PhysicTransformUtils {
         let physicWorldTransform = physicBody.getWorldTransform();
         let position = physicWorldTransform.getOrigin();
         let q2 = physicWorldTransform.getRotation();
-        object3D.transform.x = position.x();
-        object3D.transform.y = position.y();
-        object3D.transform.z = position.z();
 
-        let qua = Quaternion.HELP_0;
-        qua.set(q2.x(), q2.y(), q2.z(), q2.w());
-        object3D.transform.localRotQuat = qua;
+        let px = position.x();
+        let py = position.y();
+        let pz = position.z();
+        let qx = q2.x();
+        let qy = q2.y();
+        let qz = q2.z();
+        let qw = q2.w();
+        if (!isNaN(px) && !isNaN(qx)) {
+            object3D.transform.x = px;
+            object3D.transform.y = py;
+            object3D.transform.z = pz;
+
+            let qua = Quaternion.HELP_0;
+            qua.set(qx, qy, qz, qw);
+            object3D.transform.localRotQuat = qua;
+        }
     }
 
     public static rotationPhysics(rx: number, ry: number, rz: number, object3D: Object3D, physicBody: Ammo.btCollisionObject) {
@@ -110,6 +120,7 @@ export class PhysicTransformUtils {
         btBody.setRollingFriction(rollingFriction);
 
         btBody.setWorldTransform(btTransform);
+        btBody.setUserIndex
 
         rigidBody.mass = mass;
         rigidBody.friction = friction;
@@ -124,10 +135,22 @@ export class PhysicTransformUtils {
     }
 }
 
-export let btVector3 = (v: Vector3) => {
+export let BtVector3 = (v: Vector3) => {
     return new Ammo.btVector3(v.x, v.y, v.z);
 }
 
-export let btVector4 = (v: Vector4) => {
+export let BtVector4 = (v: Vector4) => {
     return new Ammo.btVector4(v.x, v.y, v.z, v.w);
+}
+
+export let ToVector3 = (v: Ammo.btVector3) => {
+    return new Vector3(v.x(), v.y(), v.z());
+}
+
+export let ToVector4 = (v: Ammo.btVector4) => {
+    return new Vector4(v.x(), v.y(), v.z(), v.w());
+}
+
+export let ToColor = (v: Ammo.btVector3) => {
+    return new Color(v.x(), v.y(), v.z(), 1.0);
 }

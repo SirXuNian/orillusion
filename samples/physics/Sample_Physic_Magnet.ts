@@ -18,7 +18,7 @@ export class Sample_Physic_Magnet {
         Engine3D.setting.shadow.shadowSize = 2048;
         Engine3D.setting.shadow.shadowBound = 150;
 
-        await Ammo(Ammo);
+        await Ammo.bind(window)(Ammo);
         await Engine3D.init({ renderLoop: () => this.loop() });
 
         let cameraObj = new Object3D();
@@ -49,6 +49,8 @@ export class Sample_Physic_Magnet {
         scene.addChild(lightObj3D);
 
         let physicWorld = scene.addComponent(PhysicsWorld);
+        physicWorld.createWorld();
+
         this.createPhysicBox(new Vector3(0, 0, 0), new Vector3(100, 1, 100), 0);
         this.createPhysicBox(new Vector3(-50, 0, 0), new Vector3(1, 25, 100), 0);
         this.createPhysicBox(new Vector3(50, 0, 0), new Vector3(1, 25, 100), 0);

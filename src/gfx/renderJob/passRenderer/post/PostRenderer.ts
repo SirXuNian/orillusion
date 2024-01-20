@@ -7,7 +7,7 @@ import { GPUContext } from "../../GPUContext";
 import { RTFrame } from "../../frame/RTFrame";
 import { PostBase } from "../../post/PostBase";
 import { RendererBase } from "../RendererBase";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 
 
 /**
@@ -52,6 +52,13 @@ export class PostRenderer extends RendererBase {
     }
 
     public render(view: View3D) {
+
+        for (let i = 0; i < this.postList.length; i++) {
+            const post = this.postList[i];
+            if (!post.enable) continue;
+            post.compute(view);
+        }
+
         let command = GPUContext.beginCommandEncoder();
         for (let i = 0; i < this.postList.length; i++) {
             const post = this.postList[i];

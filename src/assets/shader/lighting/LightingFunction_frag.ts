@@ -10,38 +10,47 @@ export let LightingFunction_frag: string = /*wgsl*/ `
 
 
 const LUMEN = 10.764;
+const LPI = 3.1415926 ;
 
 
+fn sampleLighting(light:LightData,direction:vec3f,iblSpecularResult:vec3f , intensity :f32 , shadow:f32 ) -> vec3f{
+  var ret = vec3f(0.0);
+  var normalDir  = fragData.N;
+  var viewDir    = fragData.V;
 
-fn calcAttenuation( d : f32 ,  falloffStart : f32 ,  falloffEnd : f32)-> f32
-{
-    // Linear falloff.
-    return saturate((falloffEnd-d) / (falloffEnd - falloffStart));
+  var lightDir   = normalize(-direction.xyz);
+  var halfDir    = normalize(lightDir + viewDir);
+  var reflectDir = normalize(reflect(-viewDir,normalDir));
+
+  var NdotH = max(0.00001,dot(normalDir,halfDir));
+  var NdotL = max(0.00001,dot(normalDir,lightDir));
+  var NdotV = max(0.00001,dot(normalDir,viewDir));
+  var HdotL = max(0.00001,dot(halfDir,lightDir));
+
+  var baseColor = fragData.Albedo.rgb ; 
+  var metallic = fragData.Metallic ;
+  var roughness = fragData.Roughness ;
+
+  var lightColor = getHDRColor( light.lightColor.rgb , light.linear )  ;
+  var att = max(0.0,intensity / LUMEN / 3.14);
+  
+  var lighting:vec3f = lightContribution(NdotH,NdotL,NdotV,HdotL,fragData.Roughness,fragData.Albedo.rgb , metallic ,shadow,fragData.F0,lightColor.rgb);
+  // lighting = fragData.F0 / 3.1415926 * NdotL ;
+  lighting = ACESToneMapping(lighting,att);
+  // ret += lighting ;
+  return lighting ;
 }
 
-fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , metallic:f32 , light:LightData , shadowBias:f32 ) -> vec3<f32> {
+
+
+fn directLighting( light:LightData , iblSpecularResult : vec3f) -> vec3<f32> {
     var color = vec3<f32>(0.0) ;
     #if USE_LIGHT
-      var L = -normalize(light.direction.xyz) ;
-      let lightCC = pow( light.lightColor.rgb,vec3<f32>(2.2));
-      var lightColor = getHDRColor( lightCC.rgb , light.linear )  ;
-      var att = light.intensity / LUMEN ;
-      if(light.castShadow>=0){
-          #if USE_SHADOWMAPING
-            for (var j: i32 = 0; j < 8; j += 1) {
-                if(j == light.castShadow){
-                  att *= shadowStrut.directShadowVisibility[j] ; 
-                }
-            }
-          #endif
-      }
-
-      #if USE_LAMBERT
-        color = vec3<f32>(1.0,1.0,1.0) ;
-      #endif 
-      
+      var L = normalize(light.direction.xyz) ;
       #if USE_BRDF
-        color = simpleBRDF(albedo,N,V,L,att,lightColor,roughness,metallic) ;
+        var shadow = directShadowVisibility[i32(light.castShadow)] ;
+        var att = light.intensity;
+        color = sampleLighting(light,L,iblSpecularResult,att, shadow);
       #endif 
     #endif 
     return color;
@@ -58,7 +67,7 @@ fn directDulLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32
         #if USE_SHADOWMAPING
           for (var j: i32 = 0; j < 8; j += 1) {
               if(j == light.castShadow){
-                att *= shadowStrut.directShadowVisibility[j] ; 
+                att *= directShadowVisibility[j] ; 
               }
           }
         #endif
@@ -86,7 +95,7 @@ fn directHairLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f3
         #if USE_SHADOWMAPING
           for (var j: i32 = 0; j < 8; j += 1) {
               if(j == light.castShadow){
-                att *= shadowStrut.directShadowVisibility[j] ; 
+                att *= directShadowVisibility[j] ; 
               }
           }
         #endif
@@ -104,7 +113,7 @@ fn directHairLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f3
 }
 
 
-fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , metallic:f32 ,light:LightData ) -> vec3<f32> {
+fn pointLighting( WP:vec3<f32>, light:LightData , iblSpecularResult : vec3f ) -> vec3<f32> {
     var color = vec3<f32>(0.0) ;
     let lightPos = light.position.xyz;
     var dir = lightPos.xyz - WP ;
@@ -116,33 +125,26 @@ fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, rough
         var L = dir ;
         var atten = 1.0 ;
         atten = 1.0 - smoothstep(0.0,light.range,dist) ;
-        atten *= 1.0 / max(light.radius,0.001) * light.intensity / LUMEN;
-        if( light.castShadow >= 0 )
-        {
-            #if USE_SHADOWMAPING
-              // atten *= shadowStrut.pointShadows[light.castShadow] ; 
-              for (var j: i32 = 0; j < 8; j += 1) {
-                  if(j == light.castShadow){
-                    atten *= shadowStrut.pointShadows[j] ; 
-                  }
-              }
-            #endif
-        }
+        atten *= 1.0 / max(light.radius,0.001) * sphereSurfaceM2(light.range,light.intensity * 10000.0 ) ;
+
+        // if( light.castShadow >= 0 )
+        // {
+        //     #if USE_SHADOWMAPING
+        //       for (var j: i32 = 0; j < 8; j += 1) {
+        //           if(j == light.castShadow){
+        //             atten *= pointShadows[j] ; 
+        //           }
+        //       }
+        //     #endif
+        // }
+
+        var shadow = pointShadows[i32(light.castShadow)] ;
 
         #if USE_IES_PROFILE
-          atten *= getLightIESProfileAtt(WP,light);
+            atten *= getLightIESProfileAtt(WP,light);
         #endif
 
-        var lightColor = light.lightColor.rgb  ;
-        lightColor = getHDRColor(lightColor , light.linear )  ;
-
-        #if USE_LAMBERT
-          color = vec3<f32>(1.0,1.0,1.0) ;
-        #endif 
-
-        #if USE_BRDF
-          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,roughness,metallic))  ;
-        #endif 
+        color = sampleLighting(light,-L,iblSpecularResult,atten,shadow);
     } 
     return color ;
 }
@@ -151,13 +153,14 @@ fn getDistanceAtten(  light:LightData , dist : f32 ) -> f32 {
   return 1.0 - smoothstep(0.0,light.range,dist) ;
 }
 
-fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , metallic:f32 ,light:LightData ) -> vec3<f32> {
+fn spotLighting( WP:vec3<f32>, light:LightData , iblSpecularResult : vec3f) -> vec3<f32> {
     let lightPos = light.position.xyz;
     var dir = lightPos.xyz - WP ;
     let dist = length(dir) ;
     if(dist != 0.0){
       dir *= 1.0 / dist ;
     }
+
     var color = vec3<f32>(0.0) ;
     if( abs(dist) < light.range * 2.0 ){
         var L = dir ;
@@ -167,7 +170,7 @@ fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughn
         var lightColor = light.lightColor.rgb  ;
 
         atten = 1.0 - smoothstep(0.0,light.range,dist) ;
-        atten *= 1.0 / max(light.radius,0.1) * light.intensity / LUMEN;
+        atten *= 1.0 / max(light.radius,0.001) * sphereSurfaceM2(light.range,light.intensity) ;
         if(angle < light.outerCutOff){
           if(angle > light.innerCutOff){
             atten *= 1.0 - smoothstep(light.innerCutOff, light.outerCutOff, angle) ;
@@ -176,31 +179,20 @@ fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughn
             atten = 0.0 ;
         }
 
-        if( light.castShadow >= 0 )
-        {
-            #if USE_SHADOWMAPING
-            for (var j: i32 = 0; j < 8; j += 1) {
-                if(j == light.castShadow){
-                  atten *= shadowStrut.pointShadows[j] ; 
-                }
-            }
-          #endif
-        }
+        var shadow = pointShadows[i32(light.castShadow)] ;
 
         #if USE_IES_PROFILE
             atten *= getLightIESProfileAtt(WP,light);
         #endif
 
-        lightColor = getHDRColor(lightColor , light.linear ) ;
+        // atten *= sphereSurfaceM2(light.range,light.intensity) ;
 
-        #if USE_LAMBERT
-          color = vec3<f32>(1.0,0.5,1.0) ;
-        #endif 
-
-        #if USE_BRDF
-          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,roughness,metallic)) ;
-        #endif 
+        color = sampleLighting(light,-L,iblSpecularResult,atten,shadow);
     }
     return  color ;
+}
+
+fn sphereSurfaceM2( radius:f32 , intensity:f32 ) -> f32 {
+  return intensity / (4.0 * LPI * radius * radius) ;
 }
 `

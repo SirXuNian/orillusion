@@ -5,7 +5,7 @@ import { Color } from "../../../../math/Color";
 import { Vector3 } from "../../../../math/Vector3";
 import { RendererMask } from "../state/RendererMask";
 import { RendererPassState } from "../state/RendererPassState";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 import { ClusterLightingRender } from "../cluster/ClusterLightingRender";
 import { Graphic3DFixedRenderPipeline } from "./Graphic3DFixedRenderPipeline";
 import { GraphicConfig } from "./GraphicConfig";

@@ -8,7 +8,7 @@ import { GPUContext } from '../../GPUContext';
 import { ProbeGBufferFrame } from '../../frame/ProbeGBufferFrame';
 import { OcclusionSystem } from '../../occlusion/OcclusionSystem';
 import { RendererBase } from '../RendererBase';
-import { PassType } from '../state/RendererType';
+import { PassType } from '../state/PassType';
 import { DDGIIrradianceComputePass } from './DDGIIrradianceComputePass';
 import { DDGIIrradianceVolume } from './DDGIIrradianceVolume';
 import { DDGIMultiBouncePass } from './DDGIMultiBouncePass';
@@ -112,7 +112,6 @@ export class DDGIProbeRenderer extends RendererBase {
         this.writeToTexture(this.irradianceColorMap, colorData, width, height);
         this.writeToTexture(this.irradianceDepthMap, depthData, width, height);
     }
-
 
 
     public updateProbe(view: View3D, probe: Probe, encoder: GPURenderPassEncoder,) {

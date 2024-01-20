@@ -6,7 +6,7 @@ import { UniformGPUBuffer } from "../core/buffer/UniformGPUBuffer";
 import { Texture } from "../core/texture/Texture";
 import { RenderShaderPass } from "./RenderShaderPass";
 import { UniformValue } from "./value/UniformValue";
-import { PassType } from "../../../renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../../renderJob/passRenderer/state/PassType";
 import { Color } from "../../../../math/Color";
 import { Vector2 } from "../../../../math/Vector2";
 import { Vector3 } from "../../../../math/Vector3";

@@ -8,10 +8,11 @@ import { EntityCollect } from '../../gfx/renderJob/collect/EntityCollect';
 import { ClusterLightingBuffer } from '../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer';
 import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
 import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
-import { PassType } from '../../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../../gfx/renderJob/passRenderer/state/PassType';
 import { SkyMaterial } from '../../materials/SkyMaterial';
 import { Vector3 } from '../../math/Vector3';
 import { SphereGeometry } from '../../shape/SphereGeometry';
+import { Scene3D } from '../..';
 
 /**
  *
