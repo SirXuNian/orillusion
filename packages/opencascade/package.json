@@ -1,0 +1,24 @@
+{
+    "name": "@orillusion/opencascade",
+    "version": "0.1.1",
+    "author": "Orillusion",
+    "description": "Orillusion Effects Plugin",
+    "main": "./dist/opencascade.umd.js",
+    "module": "./dist/opencascade.es.js",
+    "module:dev": "./index.ts",
+    "types": "./dist/index.d.ts",
+    "files": ["dist"],
+    "scripts": {
+        "build": "vite build && npm run build:types && npm run build:clean",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
+        "build:clean": "mv dist/packages/opencascade/* dist && rm -rf dist/src && rm -rf dist/packages"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    },
+    "dependencies": {
+        "@orillusion/core": "^0.7.0"
+    }
+}

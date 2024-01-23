@@ -1,6 +1,7 @@
-import { BoundingBox, Vector3 } from "..";
+import { BoundingBox } from "../core/bound/BoundingBox";
 import { GeometryBase } from "../core/geometry/GeometryBase";
 import { VertexAttributeName } from "../core/geometry/VertexAttributeName";
+import { Vector3 } from "../math/Vector3";
 
 /**
  * Sphere Geometry

@@ -4,6 +4,51 @@ import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
 
+    public static float(obj: any, property: string, open: boolean = true, onChange?: Function) {
+        if (property in obj) {
+            GUIHelp.addFolder(property);
+            GUIHelp.add(obj, property, -10.0, 10.0, 0.01).onChange(onChange);
+            open && GUIHelp.open();
+            GUIHelp.endFolder();
+        } else {
+            console.error(`no property ${property} in ${obj}`);
+        }
+    }
+
+    public static vector2(obj: { x: number, y: number }, open: boolean = true, name?: string, onChange?: Function) {
+        name ||= 'Vector2';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(obj, 'x', -10.0, 10.0, 0.01).onChange(onChange);
+        GUIHelp.add(obj, 'y', -10.0, 10.0, 0.01).onChange(onChange);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static vector3(obj: { x: number, y: number, z: number }, open: boolean = true, name?: string, onChange?: Function) {
+        name ||= 'Vector3';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(obj, 'x', -10.0, 10.0, 0.01).onChange(onChange);
+        GUIHelp.add(obj, 'y', -10.0, 10.0, 0.01).onChange(onChange);
+        GUIHelp.add(obj, 'z', -10.0, 10.0, 0.01).onChange(onChange);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static vector4(obj: { x: number, y: number, z: number, w: number }, open: boolean = true, name?: string, onChange?: Function) {
+        name ||= 'vector4';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(obj, 'x', -10.0, 10.0, 0.01).onChange(onChange);
+        GUIHelp.add(obj, 'y', -10.0, 10.0, 0.01).onChange(onChange);
+        GUIHelp.add(obj, 'z', -10.0, 10.0, 0.01).onChange(onChange);
+        GUIHelp.add(obj, 'w', -10.0, 10.0, 0.01).onChange(onChange);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+
+
+
+
 
 
 
@@ -115,6 +160,8 @@ export class GUIUtil {
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
+
+
 
     //render direct light gui panel
     public static renderDirLight(light: DirectLight, open: boolean = true, name?: string) {

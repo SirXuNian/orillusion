@@ -1,0 +1,24 @@
+{
+    "name": "@orillusion/opentype",
+    "version": "0.1.1",
+    "author": "Orillusion",
+    "description": "Orillusion Effects Plugin",
+    "main": "./dist/opentype.umd.js",
+    "module": "./dist/opentype.es.js",
+    "module:dev": "./index.ts",
+    "types": "./dist/index.d.ts",
+    "files": ["dist"],
+    "scripts": {
+        "build": "vite build && npm run build:types && npm run build:clean",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
+        "build:clean": "mv dist/packages/opentype/* dist && rm -rf dist/src && rm -rf dist/packages"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    },
+    "dependencies": {
+        "@orillusion/core": "^0.7.0"
+    }
+}

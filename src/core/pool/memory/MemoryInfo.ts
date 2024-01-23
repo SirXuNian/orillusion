@@ -360,6 +360,8 @@ export class MemoryInfo {
     }
 
     public reset() {
+        let tmpView = new Uint32Array(this.dataBytes.buffer, this.dataBytes.byteOffset + this.offset);
+        tmpView.fill(0, 0, tmpView.length);
         this.offset = 0;
     }
 
