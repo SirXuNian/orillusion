@@ -6,9 +6,17 @@ export let TestComputeLoadBuffer = /* wgsl */`
     #include "ColorUtil_frag"
     #include "GBufferStand"
 
+    struct Uniform{
+        state:i32,
+        state1:i32,
+        state2:i32,
+        state3:i32,
+    }
+
     @group(0) @binding(2) var outputTexture : texture_storage_2d<rgba16float, write>;
     @group(0) @binding(3) var reflectionsGBufferTexture : texture_2d<f32>;
     @group(0) @binding(4) var envMap : texture_2d<f32>;
+    @group(0) @binding(5) var<uniform> uniformData : Uniform;
     
     var<private> fragCoord:vec2<u32>;
     var<private> screenSize:vec2<u32>;
@@ -27,9 +35,12 @@ export let TestComputeLoadBuffer = /* wgsl */`
         var outPixel:vec3f ;
         var a = globalUniform.time ;
 
+        var state = uniformData.state ;
         //render normal color
         let gBuffer : GBuffer = getGBuffer( vec2i(fragCoord) );
         fragColor = vec4f(getColorFromGBuffer(gBuffer),1.0) ;
+        fragColor = vec4f(vec3f(gBuffer.x),1.0) ;
+        // fragColor = vec4f(1.0,0.0,0.0,1.0) ;
 
         let size = 128.0; 
         let renderRec1 = vec4f(0.0,0.0,size,size);

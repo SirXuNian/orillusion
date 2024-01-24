@@ -144,13 +144,14 @@ export class Engine3D {
             gi: false,
             postProcessing: {
                 bloom: {
-                    downSampleStep: 5,
-                    downSampleBlurSize: 5,
+                    downSampleStep: 3,
+                    downSampleBlurSize: 9,
                     downSampleBlurSigma: 1.0,
-                    upSampleBlurSize: 5,
+                    upSampleBlurSize: 9,
                     upSampleBlurSigma: 1.0,
                     luminanceThreshole: 1.0,
                     bloomIntensity: 1.0,
+                    hdr: 1.0
                 },
                 globalFog: {
                     debug: false,

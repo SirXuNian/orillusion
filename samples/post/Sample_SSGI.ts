@@ -26,6 +26,9 @@ export class Sample_SSGI {
 		Engine3D.setting.reflectionSetting.reflectionProbeMaxCount = 8;
 		Engine3D.setting.reflectionSetting.reflectionProbeSize = 128;
 		Engine3D.setting.reflectionSetting.enable = true;
+
+		Engine3D.setting.render.hdrExposure = 1.0;
+
 		GUIHelp.init();
 		await Engine3D.init();
 
@@ -35,7 +38,7 @@ export class Sample_SSGI {
 		// let sky = this.scene.getOrAddComponent(SkyRenderer);
 		// sky.map = await Engine3D.res.loadHDRTextureCube('/hdri/daytime2.hdr');
 		// this.scene.envMap = sky.map;
-		// sky.exposure = 1.0;
+		sky.exposure = 1.0;
 
 		let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
 		// mainCamera.enableCSM = true;
@@ -49,7 +52,6 @@ export class Sample_SSGI {
 
 		Object3DTransformTools.instance.active(this.scene);
 
-		Engine3D.setting.render.hdrExposure = 0.0;
 
 		await this.initScene();
 		sky.relativeTransform = this.lightObj.transform;
@@ -59,12 +61,13 @@ export class Sample_SSGI {
 
 		let ssgi: SSGIPost;
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
-		postProcessing.addPost(FXAAPost);
+		// postProcessing.addPost(FXAAPost);
 		// let ssrt = postProcessing.addPost(SSRPost);
 		// ssgi = postProcessing.addPost(SSGIPost);
-		// postProcessing.addPost(GBufferPost);
-		let bloom = postProcessing.addPost(BloomPost);
-		GUIUtil.renderBloom(bloom);
+		// let TAA = postProcessing.addPost(TAAPost);
+		// let bloom = postProcessing.addPost(BloomPost);
+		// GUIUtil.renderBloom(bloom);
+		postProcessing.addPost(GBufferPost);
 
 		GUIUtil.renderShadowSetting();
 		// GUIUtil.renderDirLight(this.lightObj.getComponent(DirectLight));
@@ -97,42 +100,42 @@ export class Sample_SSGI {
 			this.scene.addChild(this.lightObj);
 			GUIUtil.renderDirLight(lc);
 
-			let spotObj = new Object3D();
-			spotObj.addChild(Object3DUtil.GetCube());
-			let l = spotObj.addComponent(SpotLight);
-			l.castShadow = true;
-			this.scene.addChild(spotObj);
-			GUIUtil.showSpotLightGUI(l);
+			// let spotObj = new Object3D();
+			// spotObj.addChild(Object3DUtil.GetCube());
+			// let l = spotObj.addComponent(SpotLight);
+			// l.castShadow = true;
+			// this.scene.addChild(spotObj);
+			// GUIUtil.showSpotLightGUI(l);
 
-			spotObj.x = -652.02;
-			spotObj.y = 291.67;
-			spotObj.z = -225.11;
+			// spotObj.x = -652.02;
+			// spotObj.y = 291.67;
+			// spotObj.z = -225.11;
 
-			spotObj.rotationX = -8.24;
-			spotObj.rotationY = 48.38;
-			spotObj.rotationZ = 0;
+			// spotObj.rotationX = -8.24;
+			// spotObj.rotationY = 48.38;
+			// spotObj.rotationZ = 0;
 
-			l.lightColor = new Color().copyFromArray([147, 101, 101, 255]);
+			// l.lightColor = new Color().copyFromArray([147, 101, 101, 255]);
 
-			l.intensity = 3;
-			l.range = 1000;
-			l.outerAngle = 114;
+			// l.intensity = 3;
+			// l.range = 1000;
+			// l.outerAngle = 114;
 
-			let pointObj = new Object3D();
-			pointObj.addChild(Object3DUtil.GetCube());
-			let pl = pointObj.addComponent(PointLight);
-			pl.castShadow = true;
-			this.scene.addChild(pointObj);
+			// let pointObj = new Object3D();
+			// pointObj.addChild(Object3DUtil.GetCube());
+			// let pl = pointObj.addComponent(PointLight);
+			// pl.castShadow = true;
+			// this.scene.addChild(pointObj);
 
-			pointObj.x = -652.02;
-			pointObj.y = 291.67;
-			pointObj.z = -225.11;
+			// pointObj.x = -652.02;
+			// pointObj.y = 291.67;
+			// pointObj.z = -225.11;
 
-			pl.lightColor = new Color().copyFromArray([147, 101, 101, 255]);
+			// pl.lightColor = new Color().copyFromArray([147, 101, 101, 255]);
 
-			pl.intensity = 3;
-			pl.range = 1000;
-			GUIUtil.showPointLightGUI(pl);
+			// pl.intensity = 3;
+			// pl.range = 1000;
+			// GUIUtil.showPointLightGUI(pl);
 		}
 
 		// let giScene = await Engine3D.res.loadGltf("live/Archive/pxd.gltf");
@@ -159,7 +162,9 @@ export class Sample_SSGI {
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/SM_Geode_01a.glb");
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/SM_F_Display_Stand_01a.glb");
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/ue5_006.glb");
-		let giScene = await Engine3D.res.loadGltf("gltfs/scene/ue5_007.glb");
+		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/ue5_007.glb");
+		let giScene = await Engine3D.res.loadGltf("gltfs/scene/Corridor_Gardens_FountainPool01.gltf");
+
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/SM_Platform_01d.glb");
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/SM_Outfit_01d.glb");
 
@@ -174,9 +179,9 @@ export class Sample_SSGI {
 		// GUIUtil.renderLitMaterial(mat as LitMaterial);
 
 		//Demonstration
-		// giScene.scaleX = 100;
-		// giScene.scaleY = 100;
-		// giScene.scaleZ = 100;
+		giScene.scaleX = 10;
+		giScene.scaleY = 10;
+		giScene.scaleZ = 10;
 		this.scene.addChild(giScene);
 
 		let ab = giScene.getChildByName("BP_Car_Circle_01a") as Object3D;
@@ -199,6 +204,19 @@ export class Sample_SSGI {
 				ref.debug(ii++, 0.1);
 				this.scene.addChild(reflection);
 			}
+		}
+
+		{
+			let emiss = Object3DUtil.GetCube();
+			let mr = emiss.getComponent(MeshRenderer);
+			let mat = mr.material as LitMaterial;
+			// mat.emissiveColor = new Color(0.2, 0.2, 0.8);
+			// mat.emissiveIntensity = 1.5;
+
+			emiss.scaleX = 10;
+			emiss.scaleY = 10;
+			emiss.scaleZ = 10;
+			this.scene.addChild(emiss);
 		}
 	}
 }

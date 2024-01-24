@@ -114,7 +114,7 @@ export let GBufferStand = /* wgsl */ `
     }
 
     fn getViewNormalFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let zChannel = floatToVec3f(gBuffer.y) ;
+        let zChannel = unpack4x8unorm(u32(gBuffer.y)) ;
         let octUV = zChannel.xy * 2.0 - 1.0  ;
         let worldNormal = octDecode(octUV.xy) ;
         return worldNormal;
@@ -128,9 +128,9 @@ export let GBufferStand = /* wgsl */ `
     }
 
     fn getWorldNormalFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let zChannel = floatToVec3f(gBuffer.y) ;
+        let zChannel = unpack4x8unorm(u32(gBuffer.y)) ;
         let octUV = zChannel.xy * 2.0 - 1.0  ;
-        let worldNormal = getWorldNormal(octDecode(octUV.xy)) ;
+        let worldNormal = octDecode(octUV.xy) * 2.0 - 1.0 ;
         return worldNormal;
     }
 

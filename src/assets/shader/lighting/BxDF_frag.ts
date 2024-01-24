@@ -22,7 +22,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       fragData.Ao = clamp( pow(ORI_ShadingInput.AmbientOcclusion,materialUniform.ao) , 0.0 , 1.0 ) ; 
       fragData.Roughness = clamp((ORI_ShadingInput.Roughness),0.0001,1.0) * 1.85 ; 
       fragData.Metallic = ORI_ShadingInput.Metallic ; 
-      fragData.Emissive = gammaToLiner(ORI_ShadingInput.EmissiveColor.rgb) * materialUniform.emissiveIntensity * 0.00001; 
+      fragData.Emissive = gammaToLiner(ORI_ShadingInput.EmissiveColor.rgb) * materialUniform.emissiveIntensity ; 
       fragData.N = ORI_ShadingInput.Normal;
       let viewDir = normalize(globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz) ;
       fragData.V = viewDir ;
@@ -102,7 +102,7 @@ export let BxDF_frag: string = /*wgsl*/ `
               break;
             }
             case DirectLightType: {
-              specColor += directLighting(light,iblSpecularResult);
+              specColor = directLighting(light,iblSpecularResult);
               break;
             }
             case SpotLightType: {
@@ -144,8 +144,8 @@ export let BxDF_frag: string = /*wgsl*/ `
         color = vec3<f32>(clearCoatLayer.rgb/fragData.Albedo.a) ; 
       #endif
       
-      var retColor = (LinearToGammaSpace(color.rgb));
-      retColor += fragData.Emissive.xyz ;
+        var retColor = (LinearToGammaSpace(color.rgb));
+        retColor += fragData.Emissive.xyz ;
 
         var viewColor = vec4<f32>( retColor.rgb ,fragData.Albedo.a) ;
 
@@ -159,10 +159,10 @@ export let BxDF_frag: string = /*wgsl*/ `
         let gBuffer = packNHMDGBuffer(
           ORI_VertexVarying.fragCoord.z,
           fragData.Albedo.rgb,
-          retColor.rgb,
+          viewColor.rgb,
           // vec3f(0.5),
           vec3f(fragData.Roughness,fragData.Metallic,fragData.Albedo.a),
-          vNormal
+          worldNormal
         ) ;
 
         #if USE_CASTREFLECTION

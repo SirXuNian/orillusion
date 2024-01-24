@@ -473,6 +473,7 @@ export let BRDF_frag: string = /*wgsl*/ `
             env = getReflectionsEnv(reflectDir,ORI_VertexVarying.vWorldPos.xyz, mipRoughness).rgb ;
         #endif
 
+         env *= 0.45 ;
          var indirectionCube: vec3<f32> = globalUniform.skyExposure * env ;
          var F_IndirectionLight = F_indirect_Function(NdotV,roughness,F0);
 

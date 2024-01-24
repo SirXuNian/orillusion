@@ -23,7 +23,6 @@ export class GBufferFrame extends RTFrame {
         if (outColor) {
             let colorDec = new RTDescriptor();
             colorDec.loadOp = 'clear';
-
             let colorBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.colorBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
             attachments.push(colorBufferTex);
             reDescriptors.push(colorDec);
@@ -59,10 +58,13 @@ export class GBufferFrame extends RTFrame {
         return this.renderTargets[3];
     }
 
-    public getCompressGBufferTexture() {
+    public getColorTexture() {
         return this.renderTargets[0];
     }
 
+    public getCompressGBufferTexture() {
+        return this.renderTargets[1];
+    }
 
     /**
      * @internal
