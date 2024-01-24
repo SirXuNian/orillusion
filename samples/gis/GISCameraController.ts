@@ -1,9 +1,10 @@
-import { Camera3D, CameraUtil, ComponentBase, Engine3D, Matrix4, Object3D, Object3DUtil, PointerEvent3D, Ray, Vector2, Vector3, View3D, clamp } from "@orillusion/core";
+import { Camera3D, CameraUtil, ComponentBase, Engine3D, Matrix4, Object3D, Object3DUtil, PointerEvent3D, Ray, Time, Vector2, Vector3, View3D, clamp } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GISMath } from "./GISMath";
 
 class MousePickData {
     mouse: Vector2 = new Vector2();
+    smooth: Vector2 = new Vector2();
     enable: boolean = false;
     earthSurface: Vector3 = new Vector3();
 }
@@ -33,6 +34,7 @@ class CameraCtrlData {
 
         this.pickStart.mouse.set(mouseX, mouseY);
         this.pickCurrent.mouse.copyFrom(this.pickStart.mouse);
+        this.pickCurrent.smooth.copyFrom(this.pickCurrent.mouse);
         this.activeUp.copyFrom(data.up);
         this.moving = true;
     }
@@ -40,6 +42,13 @@ class CameraCtrlData {
     move(x: number, y: number) {
         this.pickCurrent.mouse.set(x, y);
     }
+
+    smooth() {
+        let t = Time.delta * 0.015;
+        this.pickCurrent.smooth.x = this.pickCurrent.mouse.x * t + this.pickCurrent.smooth.x * (1 - t);
+        this.pickCurrent.smooth.y = this.pickCurrent.mouse.y * t + this.pickCurrent.smooth.y * (1 - t);
+    }
+
     end() {
         this.moving = false;
     }
@@ -219,7 +228,7 @@ export class GISCameraController extends ComponentBase {
     private calculateDeltaRotation() {
         let dt = this._ctrlData;
         if (dt.pickStart.enable) {
-            this.screenPointToRay(dt.pickCurrent.mouse.x, dt.pickCurrent.mouse.y);
+            this.screenPointToRay(dt.pickCurrent.smooth.x, dt.pickCurrent.smooth.y);
             let currentPoint = GISMath.HitPolarSurface(this._ray);
             dt.pickCurrent.enable = currentPoint != null;
             if (currentPoint) {
@@ -250,7 +259,7 @@ export class GISCameraController extends ComponentBase {
 
     private calcRotateMatrix(): void {
         let dt = this._ctrlData;
-        if (dt.pickStart.mouse.distance(dt.pickCurrent.mouse) > 1) {
+        if (dt.pickStart.mouse.distance(dt.pickCurrent.smooth) > 1) {
             this.calculateDeltaRotation();
             if (dt.pickStart.enable) {
                 this._fromSp.localPosition = dt.pickStart.earthSurface;
@@ -266,6 +275,8 @@ export class GISCameraController extends ComponentBase {
     public onBeforeUpdate(view?: View3D) {
         if (!this.enable)
             return;
+
+        this._ctrlData.smooth();
 
         if (this._ctrlData.moving) {
             this.calcRotateMatrix();
