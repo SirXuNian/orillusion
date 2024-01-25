@@ -114,10 +114,10 @@ export let GBufferStand = /* wgsl */ `
     }
 
     fn getViewNormalFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let zChannel = unpack4x8unorm(u32(gBuffer.y)) ;
+        let zChannel = floatToVec3f(gBuffer.y) ;
         let octUV = zChannel.xy * 2.0 - 1.0  ;
-        let worldNormal = octDecode(octUV.xy) ;
-        return worldNormal;
+        let viewNormal = octDecode(octUV.xy) * 2.0 - 1.0;
+        return viewNormal;
     }
 
     fn getWorldPositionFromGBuffer(gBuffer:GBuffer,uv:vec2f) -> vec3f {
@@ -127,27 +127,33 @@ export let GBufferStand = /* wgsl */ `
         return worldPos;
     }
 
-    fn getWorldNormalFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let zChannel = unpack4x8unorm(u32(gBuffer.y)) ;
-        let octUV = zChannel.xy * 2.0 - 1.0  ;
-        let worldNormal = octDecode(octUV.xy) * 2.0 - 1.0 ;
-        return worldNormal;
-    }
 
-    fn getColorFromGBuffer(gBuffer:GBuffer) -> vec3f {
+    fn getRGBMColorFromGBuffer(gBuffer:GBuffer) -> vec3f {
         let rgb = unpack4x8unorm(u32(gBuffer.z)).rgb ;
         let m = unpack4x8unorm(u32(gBuffer.w)).z ;
         return DecodeRGBM(vec4f(rgb,m)) ;
     }
 
-    fn getAbldeoFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let wChannel = floatToVec3f(gBuffer.w) ;
-        return wChannel.xyz ;
+   
+    fn getWorldNormalFromGBuffer(gBuffer:GBuffer) -> vec3f {
+        let viewNormal = getViewNormalFromGBuffer(gBuffer) ; 
+        let worldNormal = getWorldNormal(viewNormal) ;
+        return worldNormal;
     }
 
-    fn getRMFromGBuffer(gBuffer:GBuffer) -> vec2f {
+    fn getAbldeoFromGBuffer(gBuffer:GBuffer) -> vec3f {
+        let rgb = unpack4x8unorm(u32(gBuffer.z)).rgb ;
+        return rgb ;
+    }
+
+    fn getMaterialFromGBuffer(gBuffer:GBuffer) -> vec3f {
         let channel = unpack4x8unorm(u32(gBuffer.w)) ;
-        return vec2f(channel.x,channel.y);
+        return channel.xyz;
+    }
+
+    fn getAlphaFromGBuffer(gBuffer:GBuffer) -> f32 {
+        let zChannel = floatToVec3f(gBuffer.y) ;
+        return zChannel.z;
     }
 
     

@@ -1,5 +1,6 @@
 export let GTAO_cs: string = /*wgsl*/ `
     #include "GlobalUniform"
+    #include "GBufferStand"
     
     struct GTAO{
       maxDistance: f32,
@@ -12,30 +13,39 @@ export let GTAO_cs: string = /*wgsl*/ `
       blendColor: f32,
     }
 
-    @group(0) @binding(1) var<uniform> gtaoData: GTAO;
-    @group(0) @binding(2) var<storage, read_write> directions : array<vec2<f32>>;
-    @group(0) @binding(3) var<storage, read_write> aoBuffer : array<f32>;
-
-    @group(0) @binding(4) var posTex : texture_2d<f32>;
-    @group(0) @binding(5) var normalTex : texture_2d<f32>;
-    @group(0) @binding(6) var inTex : texture_2d<f32>;
-    @group(0) @binding(7) var outTex : texture_storage_2d<rgba16float, write>;
+    @group(0) @binding(2) var<uniform> gtaoData: GTAO;
+    @group(0) @binding(3) var<storage, read_write> directions : array<vec2<f32>>;
+    @group(0) @binding(4) var<storage, read_write> aoBuffer : array<f32>;
+ 
+    @group(0) @binding(5) var inTex : texture_2d<f32>;
+    @group(0) @binding(6) var outTex : texture_storage_2d<rgba16float, write>;
     
     var<private> texSize: vec2<u32>;
     var<private> fragCoord: vec2<i32>;
+    var<private> fragUV: vec2<f32>;
     var<private> wPosition: vec3<f32>;
     var<private> wNormal: vec4<f32>;
     var<private> maxPixelScaled: f32;
+
+    var<private> gBuffer: GBuffer;
+
+    const PI = 3.1415926 ;
     
     @compute @workgroup_size( 8 , 8 , 1 )
     fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
     {
+      useNormalMatrixInv();
+
       fragCoord = vec2<i32>( globalInvocation_id.xy );
       texSize = textureDimensions(inTex).xy;
+      fragUV = vec2<f32>(fragCoord) / vec2<f32>(texSize);
       if(fragCoord.x >= i32(texSize.x) || fragCoord.y >= i32(texSize.y)){
           return;
       }
-      wNormal = textureLoad(normalTex, fragCoord, 0);
+
+      gBuffer = getGBuffer( fragCoord ) ;
+      wNormal = vec4f(getWorldNormalFromGBuffer(gBuffer),1.0); 
+
       var oc = textureLoad(inTex, fragCoord, 0);
       let index = fragCoord.x + fragCoord.y * i32(texSize.x);
       let lastFactor = aoBuffer[index];
@@ -43,7 +53,7 @@ export let GTAO_cs: string = /*wgsl*/ `
       if(wNormal.w < 0.5){//sky
           
       }else{
-          wPosition = textureLoad(posTex, fragCoord, 0).xyz;
+          wPosition = getWorldPositionFromGBuffer(gBuffer,fragUV);
           let ndc = globalUniform.projMat * globalUniform.viewMat * vec4<f32>(wPosition, 1.0);
           let ndcZ = ndc.z / ndc.w;
           maxPixelScaled = calcPixelByNDC(ndcZ);
@@ -116,8 +126,10 @@ export let GTAO_cs: string = /*wgsl*/ `
                 && sampleCoord.y < i32(texSize.y) )
               {
                 totalWeight += 1.0;
-                let samplePosition = textureLoad(posTex, sampleCoord, 0).xyzw;
-                if(samplePosition.w>0.0){
+
+                let subGBuffer = getGBuffer( sampleCoord ) ;
+                let samplePosition = getWorldPositionFromGBuffer(subGBuffer,vec2f(sampleCoord)/vec2f(texSize));
+                // if(samplePosition.w>0.0){
                   let distanceVec2 = samplePosition.xyz - wPosition;
                   let distance = length(distanceVec2);
                   if(distance < gtaoData.maxDistance ){
@@ -126,7 +138,7 @@ export let GTAO_cs: string = /*wgsl*/ `
                     factor *= 1.0 - distance / gtaoData.maxDistance;
                     weight += factor;
                   }
-                }
+                // }
               }
           }
       }

@@ -48,8 +48,9 @@ export class GBufferPost extends PostBase {
     view: View3D;
     gBufferTexture: RenderTexture;
     testCompute: ComputeShader;
-    private _state: number;
+    private _state: number = 0;
     uniformBuffer: UniformGPUBuffer;
+    currentRenderTexture: RenderTexture;
     constructor() {
         super();
     }
@@ -73,6 +74,8 @@ export class GBufferPost extends PostBase {
      */
     public set state(v: number) {
         this._state = v;
+        this.uniformBuffer.setInt32("state", v);
+        this.uniformBuffer.apply();
     }
 
     public get state(): number {
@@ -81,6 +84,7 @@ export class GBufferPost extends PostBase {
 
     private createResource() {
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
+        this.currentRenderTexture = rtFrame.getColorTexture();
         this.gBufferTexture = rtFrame.getCompressGBufferTexture();
 
         let presentationSize = webGPUContext.presentationSize;
@@ -117,6 +121,7 @@ export class GBufferPost extends PostBase {
         this.testCompute.setUniformBuffer('globalUniform', globalUniform.uniformGPUBuffer);
         this.testCompute.setUniformBuffer('uniformData', this.uniformBuffer);
         this.testCompute.setSamplerTexture("gBufferTexture", gBufferTexture);
+        this.testCompute.setSamplerTexture("currentRenderTexture", this.currentRenderTexture);
         this.testCompute.setSamplerTexture("reflectionsGBufferTexture", reflectionsGBufferTexture);
         this.testCompute.setSamplerTexture("envMap", envMap);
         this.testCompute.setStorageTexture("outputTexture", this.outTexture);

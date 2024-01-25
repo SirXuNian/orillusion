@@ -45,41 +45,42 @@ export class Sample_SSGI {
 		mainCamera.perspective(60, webGPUContext.aspect, 1, 5000.0);
 		let ctrl = mainCamera.object3D.addComponent(HoverCameraController);
 		ctrl.setCamera(-90, -25, 200);
-		// let controller = mainCamera.object3D.addComponent(FirstCharacterController);
 		this.view = new View3D();
 		this.view.scene = this.scene;
 		this.view.camera = mainCamera;
 
 		Object3DTransformTools.instance.active(this.scene);
 
-
 		await this.initScene();
 		sky.relativeTransform = this.lightObj.transform;
-
 
 		Engine3D.startRenderView(this.view);
 
 		let ssgi: SSGIPost;
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
-		// postProcessing.addPost(FXAAPost);
-		// let ssrt = postProcessing.addPost(SSRPost);
-		// ssgi = postProcessing.addPost(SSGIPost);
+		postProcessing.addPost(FXAAPost);
+
+		// ** test pass 
 		// let TAA = postProcessing.addPost(TAAPost);
+		// let gtao = postProcessing.addPost(GTAOPost);
+		// GUIUtil.renderGTAO(gtao);
+		// let gBufferPost = postProcessing.addPost(GBufferPost);
+		// GUIUtil.renderGBufferPost(gBufferPost);
 		// let bloom = postProcessing.addPost(BloomPost);
 		// GUIUtil.renderBloom(bloom);
-		postProcessing.addPost(GBufferPost);
+		// ** test pass 
 
-		GUIUtil.renderShadowSetting();
+		// ** test pass 
+		// let ssrt = postProcessing.addPost(SSRPost);
+		// ssgi = postProcessing.addPost(SSGIPost);
 		// GUIUtil.renderDirLight(this.lightObj.getComponent(DirectLight));
 
-
-
+		GUIUtil.renderShadowSetting();
 		let f = GUIHelp.addFolder("SSGI");
 		f.open();
 		GUIHelp.add(Engine3D.setting.sky, 'skyExposure', 0.0, 5.0, 0.0001);
 		GUIHelp.add(Engine3D.setting.render, 'hdrExposure', 0.0, 5.0, 0.0001);
 		GUIHelp.endFolder();
-
 	}
 
 	async initScene() {

@@ -98,10 +98,16 @@ export class CubeSky_Shader {
     fn packGBuffer(depth:f32, albedo:vec3f,hdrLighting:vec3f,rmao:vec3f,normal:vec3f) -> vec4f{
         var gBuffer : vec4f ;
         var octUVNormal = (octEncode(normalize(normal)) + 1.0) * 0.5 ;
-        var rgbm = EncodeRGBM(hdrLighting);
-        var yc = f32(pack4x8unorm(vec4f(octUVNormal,0.0,0.0))) ;
-        var zc = f32(pack4x8unorm(vec4f(rgbm.rgb,0.0))) ;
-        var wc = f32(pack4x8unorm(vec4f(rmao.rg,rgbm.a,0.0)));
+
+        var yc = f32(vec3fToFloat(vec3f(octUVNormal,0.0))) ;
+        #if USE_CASTREFLECTION
+          var rgbm = EncodeRGBM(hdrLighting);
+          var zc = f32(pack4x8unorm(vec4f(rgbm.rgb,0.0))) ;
+          var wc = f32(pack4x8unorm(vec4f(rmao.rg,rgbm.a,0.0)));
+        #else
+          var zc = f32(pack4x8unorm(vec4f(albedo.rgb,0.0)));
+          var wc = f32(pack4x8unorm(vec4f(rmao.rgb,0.0)));
+        #endif
     
         gBuffer.x = depth  ;
         gBuffer.y = yc ;

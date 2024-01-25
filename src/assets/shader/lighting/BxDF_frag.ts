@@ -154,15 +154,14 @@ export let BxDF_frag: string = /*wgsl*/ `
         let ORI_NORMALMATRIX = transpose(inverse( nMat ));
 
         var vNormal = normalize(ORI_NORMALMATRIX * (ORI_VertexVarying.vWorldNormal ));
-        var worldNormal = vec3<f32>( (vNormal.xyz + 1.0) * 0.5);
 
         let gBuffer = packNHMDGBuffer(
           ORI_VertexVarying.fragCoord.z,
           fragData.Albedo.rgb,
           viewColor.rgb,
-          // vec3f(0.5),
-          vec3f(fragData.Roughness,fragData.Metallic,fragData.Albedo.a),
-          worldNormal
+          vec3f(fragData.Roughness,fragData.Metallic,fragData.Ao),
+          vNormal,
+          fragData.Albedo.a
         ) ;
 
         #if USE_CASTREFLECTION

@@ -1,9 +1,8 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GBufferPost, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
-
 
 
 
@@ -16,6 +15,25 @@ export class GUIUtil {
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
+
+
+    static renderGBufferPost(post: GBufferPost, open: boolean = true) {
+        GUIHelp.addFolder('ShadowSetting');
+        let bufferState = {
+            current: 0,
+            abldeo: 1,
+            viewNormal: 2,
+            worldNormal: 3,
+            roughnees: 4,
+            metallic: 5,
+            ao: 6,
+            alpha: 7,
+        }
+        GUIHelp.add(post, 'state', bufferState);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
 
     //render AtmosphericComponent
     public static renderAtmosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
@@ -126,7 +144,7 @@ export class GUIUtil {
         GUIHelp.add(light.transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(light.transform, 'rotationZ', 0.0, 360.0, 0.01);
         GUIHelp.addColor(light, 'lightColor');
-        GUIHelp.add(light, 'intensity', 0.0, 300.0, 0.01);
+        GUIHelp.add(light, 'intensity', 0.0, 1500.0, 0.01);
         GUIHelp.add(light, 'indirect', 0.0, 1.0, 0.01);
         GUIHelp.add(light, 'castShadow');
 

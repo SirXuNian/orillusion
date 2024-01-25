@@ -33,21 +33,10 @@ export let ReflectionShader_shader: string = /*wgsl*/ `
 
         useSphereReflection();
         var finalColor : vec3f ;
-        // if(materialUniform.reflectionIndex == 0.0){
-        //     finalColor = getReflectionsMap(n,materialUniform.reflectionIndex) ;
-        // }else if(materialUniform.reflectionIndex == 1.0){
-        //     finalColor = textureSampleLevel(reflectionMap,reflectionMapSampler,uv * vec2f(1.0,1.0/8.0),0.0).rgb ;
-        //     finalColor = floatToVec3f(finalColor.y);
-        // }else if(materialUniform.reflectionIndex == 2.0){
         let scale = vec2f(1.0/8.0,1.0/globalUniform.reflectionProbeMaxCount) ;
         var uv = (octEncode(-ORI_VertexVarying.vWorldNormal) + 1.0) * 0.5 ;
         var uv1 = uv * scale + vec2f(0.0,(materialUniform.reflectionIndex * scale.y )) ;
         let gBuffer = textureSampleLevel(reflectionMap,reflectionMapSampler,uv1,0.0);
-
-        // let rgb = unpack4x8unorm(u32(gBuffer.z)).rgb ;
-        // let m = unpack4x8unorm(u32(gBuffer.w)).z ;
-        // finalColor = DecodeRGBM(vec4f(rgb,m));
-
         ORI_ShadingInput.BaseColor = vec4f(gBuffer.rgb,1.0) ;
         UnLit();
     }
@@ -66,7 +55,8 @@ export let ReflectionShader_shader: string = /*wgsl*/ `
                 vec3f(0.0),
                 viewColor.rgb,
                 vec3f(0.0),
-                vNormal
+                vNormal,
+                viewColor.a
             );
 
             #if USE_CASTREFLECTION

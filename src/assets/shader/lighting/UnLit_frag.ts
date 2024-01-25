@@ -15,7 +15,8 @@ export let UnLit_frag: string = /*wgsl*/ `
             viewColor.rgb,
             // vec3f(0.5),
             vec3f(1.0,0.0,0.0),
-            vNormal
+            vNormal,
+            alpha
           ) ;
   
           #if USE_CASTREFLECTION

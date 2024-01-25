@@ -15,8 +15,9 @@ export let TestComputeLoadBuffer = /* wgsl */`
 
     @group(0) @binding(2) var outputTexture : texture_storage_2d<rgba16float, write>;
     @group(0) @binding(3) var reflectionsGBufferTexture : texture_2d<f32>;
-    @group(0) @binding(4) var envMap : texture_2d<f32>;
-    @group(0) @binding(5) var<uniform> uniformData : Uniform;
+    @group(0) @binding(4) var currentRenderTexture : texture_2d<f32>;
+    @group(0) @binding(5) var envMap : texture_2d<f32>;
+    @group(0) @binding(6) var<uniform> uniformData : Uniform;
     
     var<private> fragCoord:vec2<u32>;
     var<private> screenSize:vec2<u32>;
@@ -32,15 +33,52 @@ export let TestComputeLoadBuffer = /* wgsl */`
 
         useNormalMatrixInv();
 
+        let color = textureLoad(currentRenderTexture, fragCoord , 0);
+        fragColor = color ;
+
         var outPixel:vec3f ;
         var a = globalUniform.time ;
 
         var state = uniformData.state ;
         //render normal color
         let gBuffer : GBuffer = getGBuffer( vec2i(fragCoord) );
-        fragColor = vec4f(getColorFromGBuffer(gBuffer),1.0) ;
-        fragColor = vec4f(vec3f(gBuffer.x),1.0) ;
-        // fragColor = vec4f(1.0,0.0,0.0,1.0) ;
+        switch (state) {
+            case 0:{
+                break;
+            }
+            case 1:{
+                fragColor = vec4f(getAbldeoFromGBuffer(gBuffer),1.0) ;
+                break;
+            }
+            case 2:{
+                fragColor = vec4f(getViewNormalFromGBuffer(gBuffer),1.0) ;
+                break;
+            }
+            case 3:{
+                fragColor = vec4f(getWorldNormalFromGBuffer(gBuffer),1.0) ;
+                break;
+            }
+            case 4:{
+                fragColor = vec4f(vec3f(getMaterialFromGBuffer(gBuffer).r),1.0) ;
+                break;
+            }
+            case 5:{
+                fragColor = vec4f(vec3f(getMaterialFromGBuffer(gBuffer).g),1.0) ;
+                break;
+            }    
+            case 6:{
+                fragColor = vec4f(vec3f(getMaterialFromGBuffer(gBuffer).b),1.0) ;
+                break;
+            }
+            case 7:{
+                fragColor = vec4f(vec3f(getAlphaFromGBuffer(gBuffer)),1.0) ;
+                break;
+            }
+            
+            default:{
+                break;
+            }
+        }
 
         let size = 128.0; 
         let renderRec1 = vec4f(0.0,0.0,size,size);
@@ -59,7 +97,7 @@ export let TestComputeLoadBuffer = /* wgsl */`
         if(insideRectangle(f32FragCoord,viewRectangle)){
             let uv = clipViewUV(viewRectangle,size,f32FragCoord);
             let gBuffer = textureGBuffer(texture,uv);
-            let color = getColorFromGBuffer(gBuffer);
+            let color = getRGBMColorFromGBuffer(gBuffer);
             fragColor = vec4f(color,1.0); 
         }
     }

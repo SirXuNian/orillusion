@@ -19,7 +19,6 @@ import { View3D } from '../../../core/View3D';
 import { TAA_cs } from '../../../assets/shader/compute/TAA_cs';
 import { TAACopyTex_cs } from '../../../assets/shader/compute/TAACopyTex_cs';
 import { TAASharpTex_cs } from '../../../assets/shader/compute/TAASharpTex_cs';
-import { CResizeEvent } from '../../../event/CResizeEvent';
 
 /**
  * Temporal AA
@@ -155,13 +154,13 @@ export class TAAPost extends PostBase {
         let taaSetting: UniformGPUBuffer = new UniformGPUBuffer(16 * 2 + 4 * 3); //matrix + 3 * vector4
 
         let standUniform = GlobalBindGroup.getCameraGroup(view.camera);
-        computeShader.setUniformBuffer('standUniform', standUniform.uniformGPUBuffer);
+        computeShader.setUniformBuffer('globalUniform', standUniform.uniformGPUBuffer);
         computeShader.setUniformBuffer('taaData', taaSetting);
         computeShader.setStorageBuffer(`preColorBuffer`, this.preColorBuffer);
 
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
+        let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
         computeShader.setSamplerTexture(`preColorTex`, this.preColorTex);
-        computeShader.setSamplerTexture(`posTex`, rtFrame.getPositionMap());
+        computeShader.setSamplerTexture(`gBufferTexture`, rtFrame.getCompressGBufferTexture());
         this.autoSetColorTexture('inTex', computeShader);
         computeShader.setStorageTexture(`outTex`, this.taaTexture);
 

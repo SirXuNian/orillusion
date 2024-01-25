@@ -12,14 +12,13 @@ import { ClusterLightingBuffer } from '../cluster/ClusterLightingBuffer';
 import { RenderContext } from '../RenderContext';
 import { RenderNode } from '../../../../components/renderer/RenderNode';
 import { RendererMask } from '../state/RendererMask';
-import { RenderLayer } from '../../config/RenderLayer';
 import { PreFilteredEnvironment_cs } from '../../../../assets/shader/compute/PreFilteredEnvironment_cs';
-import { Float32ArrayTexture } from '../../../../textures/Float32ArrayTexture';
-import { TextureMipmapGenerator } from '../../../graphics/webGpu/core/texture/TextureMipmapGenerator';
 import { ComputeShader } from '../../../graphics/webGpu/shader/ComputeShader';
 import { VirtualTexture } from '../../../../textures/VirtualTexture';
 import { GPUTextureFormat } from '../../../graphics/webGpu/WebGPUConst';
-import { GlobalBindGroup, Time, UniformGPUBuffer } from '../../../..';
+import { UniformGPUBuffer } from '../../../graphics/webGpu/core/buffer/UniformGPUBuffer';
+import { GlobalBindGroup } from '../../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
+import { Time } from '../../../../util/Time';
 
 /**
  * @internal

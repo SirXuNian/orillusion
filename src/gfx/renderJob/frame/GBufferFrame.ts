@@ -9,9 +9,14 @@ import { RTFrame } from "./RTFrame";
 import { RTResourceMap } from "./RTResourceMap";
 
 export class GBufferFrame extends RTFrame {
+    public static colorPass_GBuffer: string = "ColorPassGBuffer";
     public static reflections_GBuffer: string = "reflections_GBuffer";
     public static gBufferMap: Map<string, GBufferFrame> = new Map<string, GBufferFrame>();
     // public static bufferTexture: boolean = false;
+
+    private _colorBufferTex: RenderTexture;
+    private _compressGBufferTex: RenderTexture;
+
     constructor() {
         super([], []);
     }
@@ -23,13 +28,13 @@ export class GBufferFrame extends RTFrame {
         if (outColor) {
             let colorDec = new RTDescriptor();
             colorDec.loadOp = 'clear';
-            let colorBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.colorBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
-            attachments.push(colorBufferTex);
+            this._colorBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.colorBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
+            attachments.push(this._colorBufferTex);
             reDescriptors.push(colorDec);
         }
 
-        let compressGBufferTex = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.rgba32float, false, undefined, 1, 0, true, autoResize);
-        attachments.push(compressGBufferTex);
+        this._compressGBufferTex = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.rgba32float, false, undefined, 1, 0, true, autoResize);
+        attachments.push(this._compressGBufferTex);
 
         this.depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false, undefined, 1, 0, true, autoResize);
         this.depthTexture.name = key + `_depthTexture`;
@@ -43,10 +48,6 @@ export class GBufferFrame extends RTFrame {
         reDescriptors.push(compressGBufferRTDes);
     }
 
-    public getColorMap() {
-        return this.renderTargets[0];
-    }
-
     public getPositionMap() {
     }
 
@@ -54,16 +55,12 @@ export class GBufferFrame extends RTFrame {
         return this.renderTargets[2];
     }
 
-    public getMaterialMap() {
-        return this.renderTargets[3];
-    }
-
     public getColorTexture() {
-        return this.renderTargets[0];
+        return this._colorBufferTex;
     }
 
     public getCompressGBufferTexture() {
-        return this.renderTargets[1];
+        return this._compressGBufferTex;
     }
 
     /**
