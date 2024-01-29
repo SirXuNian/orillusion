@@ -1,5 +1,5 @@
 export let FXAAShader: string = /*wgsl*/ `
-    #include 'PixeShaderUtil'
+    #include 'BitUtil'
     struct FragmentOutput {
         @location(auto) o_Target: vec4<f32>
     };

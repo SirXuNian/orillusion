@@ -45,7 +45,7 @@ import { GBuffer_pass } from './core/pass/GBuffer_pass';
 import { castPointShadowMap_vert, directionShadowCastMap_frag, shadowCastMap_frag, shadowCastMap_vert } from './core/pass/CastShadow_pass';
 import { ZPassShader_vs } from './core/pass/ZPassShader_vs';
 import { ZPassShader_fs } from './core/pass/ZPassShader_fs';
-import { PixeShaderUtil } from './utils/PixeShaderUtil';
+import { BitUtil } from './utils/BitUtil';
 import { GBufferStand } from './core/common/GBufferStand';
 import { ReflectionShader_shader } from './materials/ReflectionShader_shader';
 import { ReflectionCG } from './env/ReflectionCG';
@@ -58,7 +58,7 @@ export class ShaderLib {
     public static init() {
         ShaderLib.register('MathShader', MathShader);
         ShaderLib.register('FastMathShader', FastMathShader);
-        ShaderLib.register("PixeShaderUtil", PixeShaderUtil);
+        ShaderLib.register("BitUtil", BitUtil);
         ShaderLib.register("GBufferStand", GBufferStand);
 
         ShaderLib.register('MatrixShader', MatrixShader);

@@ -1,5 +1,5 @@
 export let SSR_IS_cs: string = /*wgsl*/ `
-#include 'PixeShaderUtil'
+#include 'BitUtil'
 
   struct SSRUniformData {
     ssrBufferSizeX: f32,

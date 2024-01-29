@@ -2,7 +2,7 @@ export let TestComputeLoadBuffer = /* wgsl */`
     #include "GlobalUniform"
     #include "MathShader"
     #include "FastMathShader"
-    #include "PixeShaderUtil"
+    #include "BitUtil"
     #include "ColorUtil_frag"
     #include "GBufferStand"
 
@@ -24,6 +24,18 @@ export let TestComputeLoadBuffer = /* wgsl */`
     var<private> fragColor:vec4f;
     const PI = 3.1415926 ;
     
+    var<private> colorSet : array<vec3<f32>, 9> = array<vec3<f32>, 9>(
+        vec3<f32>(1.0, 0.0, 0.0),
+        vec3<f32>(1.0, 0.5, 0.0),
+        vec3<f32>(0.5, 1.0, 0.0),
+        vec3<f32>(0.0, 1.0, 0.0),
+        vec3<f32>(0.0, 1.0, 0.5),
+        vec3<f32>(0.0, 0.5, 1.0),
+        vec3<f32>(0.0, 0.0, 1.0),
+        vec3<f32>(0.5, 0.0, 1.0),
+        vec3<f32>(1.0, 0.0, 0.5)
+    );
+
     @compute @workgroup_size( 16 , 16 , 1 )
     fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
     {
@@ -47,7 +59,7 @@ export let TestComputeLoadBuffer = /* wgsl */`
                 break;
             }
             case 1:{
-                fragColor = vec4f(getAbldeoFromGBuffer(gBuffer),1.0) ;
+                fragColor = vec4f(getAbldeoFromGBuffer(gBuffer).rgb,1.0) ;
                 break;
             }
             case 2:{
@@ -59,19 +71,20 @@ export let TestComputeLoadBuffer = /* wgsl */`
                 break;
             }
             case 4:{
-                fragColor = vec4f(vec3f(getMaterialFromGBuffer(gBuffer).r),1.0) ;
+                fragColor = vec4f(vec3f(getRoughneesFromGBuffer(gBuffer)),1.0) ;
                 break;
             }
             case 5:{
-                fragColor = vec4f(vec3f(getMaterialFromGBuffer(gBuffer).g),1.0) ;
+                fragColor = vec4f(vec3f(getMetaillicFromGBuffer(gBuffer)),1.0) ;
                 break;
             }    
             case 6:{
-                fragColor = vec4f(vec3f(getMaterialFromGBuffer(gBuffer).b),1.0) ;
+                fragColor = vec4f(vec3f(getAlphaFromGBuffer(gBuffer)),1.0) ;
                 break;
             }
             case 7:{
-                fragColor = vec4f(vec3f(getAlphaFromGBuffer(gBuffer)),1.0) ;
+                let id = (f32(getIDFromGBuffer(gBuffer)) * f_r22g8.r) % 9.0;
+                fragColor = vec4f(colorSet[u32(id)],1.0) ;
                 break;
             }
             

@@ -103,5 +103,10 @@ export let GlobalUniform: string = /*wgsl*/ `
     var worldNormal = NORMALMATRIX_INV * viewNormal ;
     return normalize(worldNormal.xyz);
   }
+
+  fn getViewNormal(worldNormal:vec3f) -> vec3f {
+    var viewNormal = globalUniform.viewMat * vec4f(worldNormal,0.0) ;
+    return normalize(viewNormal.xyz);
+  }
 `
 

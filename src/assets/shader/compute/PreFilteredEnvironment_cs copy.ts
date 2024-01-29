@@ -3,7 +3,7 @@ export let PreFilteredEnvironment_cs2: string = /*wgsl*/ `
     // sample prefiltered cube uv texture 
     // storge info to oct map 
     #include "GenerayRandomDir"
-    #include "PixeShaderUtil"
+    #include "BitUtil"
     #include "MathShader"
     
     struct UniformData{

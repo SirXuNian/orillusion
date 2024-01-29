@@ -2,7 +2,7 @@ export let ReflectionShader_shader: string = /*wgsl*/ `
     #include "Common_vert"
     #include "Common_frag"
     #include "GlobalUniform"
-    #include "PixeShaderUtil"
+    #include "BitUtil"
     #include "MathShader"
     #include "ReflectionCG"
     #include "ColorUtil_frag"

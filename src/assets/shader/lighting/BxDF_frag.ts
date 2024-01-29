@@ -3,7 +3,7 @@ export let BxDF_frag: string = /*wgsl*/ `
   #include "BRDF_frag"
   #include "MathShader"
   #include "FastMathShader"
-  #include "PixeShaderUtil"
+  #include "BitUtil"
   #include "Common_frag"
   #include "GlobalUniform"
 
@@ -153,7 +153,7 @@ export let BxDF_frag: string = /*wgsl*/ `
         let nMat = mat3x3<f32>(finalMatrix[0].xyz,finalMatrix[1].xyz,finalMatrix[2].xyz) ;
         let ORI_NORMALMATRIX = transpose(inverse( nMat ));
 
-        var vNormal = normalize(ORI_NORMALMATRIX * (ORI_VertexVarying.vWorldNormal ));
+        var vNormal = ORI_VertexVarying.vWorldNormal.rgb ;
 
         let gBuffer = packNHMDGBuffer(
           ORI_VertexVarying.fragCoord.z,

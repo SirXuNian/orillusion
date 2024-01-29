@@ -1,7 +1,7 @@
 export let GBufferStand = /* wgsl */ `
     #include "MathShader"
     #include "FastMathShader"
-    #include "PixeShaderUtil"
+    #include "BitUtil"
     #include "ColorUtil_frag"
 
     @group(0) @binding(1) var gBufferTexture : texture_2d<f32>;
@@ -114,10 +114,8 @@ export let GBufferStand = /* wgsl */ `
     }
 
     fn getViewNormalFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let zChannel = floatToVec3f(gBuffer.y) ;
-        let octUV = zChannel.xy * 2.0 - 1.0  ;
-        let viewNormal = octDecode(octUV.xy) * 2.0 - 1.0;
-        return viewNormal;
+        let worldNormal = getWorldNormalFromGBuffer(gBuffer) ;
+        return getViewNormal(worldNormal);
     }
 
     fn getWorldPositionFromGBuffer(gBuffer:GBuffer,uv:vec2f) -> vec3f {
@@ -136,24 +134,40 @@ export let GBufferStand = /* wgsl */ `
 
    
     fn getWorldNormalFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let viewNormal = getViewNormalFromGBuffer(gBuffer) ; 
-        let worldNormal = getWorldNormal(viewNormal) ;
-        return worldNormal;
+        // let viewNormal = getViewNormalFromGBuffer(gBuffer) ; 
+        // let worldNormal = getWorldNormal(viewNormal) ;
+        // return worldNormal;
+        let zChannel = float_to_r11g11b9(gBuffer.y) ;
+        let octUV = zChannel.xy * 2.0 - 1.0  ;
+        let viewNormal = octDecode(octUV.xy);
+        return viewNormal;
     }
 
-    fn getAbldeoFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let rgb = unpack4x8unorm(u32(gBuffer.z)).rgb ;
-        return rgb ;
-    }
 
-    fn getMaterialFromGBuffer(gBuffer:GBuffer) -> vec3f {
-        let channel = unpack4x8unorm(u32(gBuffer.w)) ;
-        return channel.xyz;
+
+    fn getAbldeoFromGBuffer(gBuffer:GBuffer) -> vec4f {
+        let rgba = floatToVec4f_7bits(gBuffer.z).rgba ;
+        return rgba ;
     }
 
     fn getAlphaFromGBuffer(gBuffer:GBuffer) -> f32 {
-        let zChannel = floatToVec3f(gBuffer.y) ;
-        return zChannel.z;
+        let rgba = floatToVec4f_7bits(gBuffer.z).rgba ;
+        return rgba.a;
+    }
+
+    fn getMetaillicFromGBuffer(gBuffer:GBuffer) -> f32 {
+        let channel = float_to_r22g8(gBuffer.w) ;
+        return channel.y;
+    }
+
+    fn getRoughneesFromGBuffer(gBuffer:GBuffer) -> f32 {
+        let channel = float_to_r11g11b9(gBuffer.y) ;
+        return channel.z;
+    }
+
+    fn getIDFromGBuffer(gBuffer:GBuffer) -> f32 {
+        let channel = float_to_r22g8(gBuffer.w) ;
+        return channel.x;
     }
 
     

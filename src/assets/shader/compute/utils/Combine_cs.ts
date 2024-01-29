@@ -1,6 +1,6 @@
 export let Combine_cs = /* wgsl */`
     #include "GlobalUniform"
-    #include "PixeShaderUtil"
+    #include "BitUtil"
     #include 'ColorUtil_frag'
     #include 'GBufferStand'
 

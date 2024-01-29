@@ -1,7 +1,7 @@
 export let SSR_RayTrace_cs: string = /*wgsl*/ `
   #include "GlobalUniform"
   #include "MathShader"
-  #include "PixeShaderUtil"
+  #include "BitUtil"
   #include "GBufferStand"
 
   struct SSRUniformData {

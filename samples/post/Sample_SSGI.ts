@@ -2,7 +2,7 @@ import {
 	View3D, DirectLight, Engine3D,
 	PostProcessingComponent, LitMaterial, HoverCameraController,
 	KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry,
-	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, BloomPost, SSRPost, SSGIPost, GBufferPost, FXAAPost, SkyRenderer, Reflection, SphereReflection, GBufferFrame, ProfilerUtil, Time, SpotLight, Object3DUtil, Object3DTransformTools, PointLight
+	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, BloomPost, SSRPost, SSGIPost, GBufferPost, FXAAPost, SkyRenderer, Reflection, SphereReflection, GBufferFrame, ProfilerUtil, Time, SpotLight, Object3DUtil, Object3DTransformTools, PointLight, DepthOfFieldPost, OutlinePost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats';
@@ -62,13 +62,17 @@ export class Sample_SSGI {
 
 		// ** test pass 
 		// let TAA = postProcessing.addPost(TAAPost);
-		// let gtao = postProcessing.addPost(GTAOPost);
-		// GUIUtil.renderGTAO(gtao);
+		let gtao = postProcessing.addPost(GTAOPost);
+		GUIUtil.renderGTAO(gtao);
 		// let gBufferPost = postProcessing.addPost(GBufferPost);
 		// GUIUtil.renderGBufferPost(gBufferPost);
-		// let bloom = postProcessing.addPost(BloomPost);
-		// GUIUtil.renderBloom(bloom);
+		let bloom = postProcessing.addPost(BloomPost);
+		GUIUtil.renderBloom(bloom);
+		// let depth = postProcessing.addPost(DepthOfFieldPost);
+		// GUIUtil.renderDepthOfField(depth);
 		// ** test pass 
+		// let post = postProcessing.addPost(OutlinePost);
+		// GUIUtil.renderOutlinePost(post);
 
 		// ** test pass 
 		// let ssrt = postProcessing.addPost(SSRPost);
@@ -164,7 +168,8 @@ export class Sample_SSGI {
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/SM_F_Display_Stand_01a.glb");
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/ue5_006.glb");
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/ue5_007.glb");
-		let giScene = await Engine3D.res.loadGltf("gltfs/scene/Corridor_Gardens_FountainPool01.gltf");
+		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/Corridor_Gardens_FountainPool01.gltf");
+		let giScene = await Engine3D.res.loadGltf("gltfs/scene/cim.glb");
 
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/SM_Platform_01d.glb");
 		// let giScene = await Engine3D.res.loadGltf("gltfs/scene/SM_Outfit_01d.glb");

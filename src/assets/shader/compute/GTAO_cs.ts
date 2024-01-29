@@ -45,14 +45,13 @@ export let GTAO_cs: string = /*wgsl*/ `
 
       gBuffer = getGBuffer( fragCoord ) ;
       wNormal = vec4f(getWorldNormalFromGBuffer(gBuffer),1.0); 
+      var visible = getRoughneesFromGBuffer(gBuffer);
 
       var oc = textureLoad(inTex, fragCoord, 0);
       let index = fragCoord.x + fragCoord.y * i32(texSize.x);
       let lastFactor = aoBuffer[index];
       var newFactor = 0.0;
-      if(wNormal.w < 0.5){//sky
-          
-      }else{
+      if(visible > 0.0){//sky
           wPosition = getWorldPositionFromGBuffer(gBuffer,fragUV);
           let ndc = globalUniform.projMat * globalUniform.viewMat * vec4<f32>(wPosition, 1.0);
           let ndcZ = ndc.z / ndc.w;
@@ -63,7 +62,7 @@ export let GTAO_cs: string = /*wgsl*/ `
       var factor:f32 = mix(lastFactor, newFactor, 0.6);
       aoBuffer[index] = factor;
       factor = blurFactor(factor);
-      factor = saturate(1.0 - factor * gtaoData.darkFactor);
+      factor = saturate(1.0 - factor * gtaoData.darkFactor)* gtaoData.darkFactor;
       var gtao = vec3<f32>(factor);
       if(gtaoData.multiBounce > 0.5){
           gtao = MultiBounce(factor, oc.xyz);
@@ -113,10 +112,10 @@ export let GTAO_cs: string = /*wgsl*/ `
     }
     
     fn rayMarch() -> f32{
-      let originNormal = normalize(vec3<f32>(wNormal.xyz) * 2.0 - 1.0);
+      let originNormal = normalize(vec3<f32>(wNormal.xyz));
       let stepPixel = maxPixelScaled / gtaoData.rayMarchSegment;
       var weight:f32 = 0.0;
-      var totalWeight:f32 = 0.1;
+      var totalWeight:f32 = 0.0;
       for(var i:i32 = 0; i < 8; i += 1){
           let dirVec2 = directions[i];
           for(var j:f32 = 1.1; j < maxPixelScaled; j += stepPixel){
@@ -129,7 +128,8 @@ export let GTAO_cs: string = /*wgsl*/ `
 
                 let subGBuffer = getGBuffer( sampleCoord ) ;
                 let samplePosition = getWorldPositionFromGBuffer(subGBuffer,vec2f(sampleCoord)/vec2f(texSize));
-                // if(samplePosition.w>0.0){
+                var visible = getRoughneesFromGBuffer(subGBuffer);
+                if(visible>0.0){
                   let distanceVec2 = samplePosition.xyz - wPosition;
                   let distance = length(distanceVec2);
                   if(distance < gtaoData.maxDistance ){
@@ -138,7 +138,7 @@ export let GTAO_cs: string = /*wgsl*/ `
                     factor *= 1.0 - distance / gtaoData.maxDistance;
                     weight += factor;
                   }
-                // }
+                }
               }
           }
       }

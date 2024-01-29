@@ -2,7 +2,7 @@
  * @internal
  */
 export let MathShader = /* wgsl */ `
-  #include 'PixeShaderUtil'
+  #include 'BitUtil'
   // fn getViewPosition(z:f32,uv:vec2f) -> vec3f {
   //   let pvMatrix = globalUniform.projMat * globalUniform.viewMat ;
   //   let worldPos = getWorldPosition(z,uv) ;

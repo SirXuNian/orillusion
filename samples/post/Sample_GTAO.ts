@@ -2,18 +2,19 @@ import {
 	View3D, DirectLight, Engine3D,
 	PostProcessingComponent, LitMaterial, HoverCameraController,
 	KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry,
-	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color
+	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, FXAAPost, GBufferPost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
-class Sample_GTAO {
+export class Sample_GTAO {
 	lightObj: Object3D;
 	scene: Scene3D;
 
 	async run() {
 		Engine3D.setting.shadow.shadowSize = 2048
 		Engine3D.setting.shadow.shadowBound = 500;
+		Engine3D.setting.shadow.shadowBias = 0.05;
 		Engine3D.setting.render.debug = true;
 
 		await Engine3D.init();
@@ -49,11 +50,17 @@ class Sample_GTAO {
 		sky.relativeTransform = this.lightObj.transform;
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
-		let post = postProcessing.addPost(GTAOPost);
-		post.maxDistance = 60;
-		this.gui();
+		let post = postProcessing.addPost(FXAAPost);
+		// let gBufferPost = postProcessing.addPost(GBufferPost);
+		// GUIUtil.renderGBufferPost(gBufferPost);
+		{
+			let post = postProcessing.addPost(GTAOPost);
+			// post.maxDistance = 60;
+			GUIUtil.renderGTAO(post);
+		}
 
-		GUIUtil.renderDebug();
+		// GUIUtil.renderDebug();
+		GUIUtil.renderShadowSetting();
 	}
 
 	async initScene() {
@@ -115,21 +122,6 @@ class Sample_GTAO {
 		}
 	}
 
-	private gui() {
-		GUIHelp.init();
-		let postProcessing = this.scene.getComponent(PostProcessingComponent);
-		let post = postProcessing.getPost(GTAOPost);
-
-		GUIHelp.addFolder("GTAO");
-		GUIHelp.add(post, "maxDistance", 0.0, 50, 1);
-		GUIHelp.add(post, "maxPixel", 0.0, 50, 1);
-		GUIHelp.add(post, "rayMarchSegment", 0.0, 50, 0.001);
-		GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
-		GUIHelp.add(post, "blendColor");
-		GUIHelp.add(post, "multiBounce");
-		GUIHelp.endFolder();
-	}
 
 }
 
-new Sample_GTAO().run();

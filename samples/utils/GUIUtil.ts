@@ -1,10 +1,17 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GBufferPost, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GBufferPost, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, OutlinePost, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
-
-
+    static renderOutlinePost(post: OutlinePost) {
+        GUIHelp.addFolder('OutlinePost');
+        GUIHelp.add(post, 'outlinePixel', 0, 2048, 1);
+        GUIHelp.add(post, 'fadeOutlinePixel', 0.0001, 0.2, 0.00001);
+        GUIHelp.add(post, 'strength', 0.0001, 0.2, 0.00001);
+        GUIHelp.add(post, 'useAddMode');
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
 
     public static renderShadowSetting(open: boolean = true) {
         GUIHelp.addFolder('ShadowSetting');
@@ -26,8 +33,8 @@ export class GUIUtil {
             worldNormal: 3,
             roughnees: 4,
             metallic: 5,
-            ao: 6,
-            alpha: 7,
+            alpha: 6,
+            modelID: 7,
         }
         GUIHelp.add(post, 'state', bufferState);
         open && GUIHelp.open();

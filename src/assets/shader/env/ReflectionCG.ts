@@ -1,6 +1,6 @@
 export let ReflectionCG: string = /* wgsl */ `
     #include 'MathShader'
-    #include 'PixeShaderUtil'
+    #include 'BitUtil'
     #include 'GlobalUniform'
 
     struct ReflectionInfo{

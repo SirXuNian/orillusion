@@ -46,7 +46,7 @@ export class CubeSky_Shader {
   public static sky_fs_frag_wgsl: string = /* wgsl */ `
     #include "GlobalUniform"
     #include "MathShader"
-    #include "PixeShaderUtil"
+    #include "BitUtil"
     #include "ColorUtil_frag"
     #include "FragmentOutput"
 
@@ -99,14 +99,14 @@ export class CubeSky_Shader {
         var gBuffer : vec4f ;
         var octUVNormal = (octEncode(normalize(normal)) + 1.0) * 0.5 ;
 
-        var yc = f32(vec3fToFloat(vec3f(octUVNormal,0.0))) ;
+        var yc = f32(r11g11b9_to_float(vec3f(octUVNormal,0.0))) ;
         #if USE_CASTREFLECTION
           var rgbm = EncodeRGBM(hdrLighting);
           var zc = f32(pack4x8unorm(vec4f(rgbm.rgb,0.0))) ;
           var wc = f32(pack4x8unorm(vec4f(rmao.rg,rgbm.a,0.0)));
         #else
-          var zc = f32(pack4x8unorm(vec4f(albedo.rgb,0.0)));
-          var wc = f32(pack4x8unorm(vec4f(rmao.rgb,0.0)));
+          var zc = f32(vec4fToFloat_7bits(vec4f(albedo.rgb,0.0)));
+          var wc = f32(r22g8_to_float(vec2f(f32(0.0),rmao.g)));
         #endif
     
         gBuffer.x = depth  ;

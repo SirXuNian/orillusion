@@ -2,7 +2,7 @@ export let SSGI2_cs: string = /*wgsl*/ `
     #include "GlobalUniform"
     #include "MathShader"
     #include "FastMathShader"
-    #include "PixeShaderUtil"
+    #include "BitUtil"
     #include "ColorUtil_frag"
     #include "GBufferStand"
 
