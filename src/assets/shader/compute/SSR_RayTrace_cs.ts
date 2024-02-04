@@ -108,12 +108,9 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     
     worldNormal = getWorldNormalFromGBuffer(gBuffer) ;
 
-    var materialBuffer = getRMFromGBuffer(gBuffer) ;
-    materialBuffer.r = materialBuffer.r ;
-    let materialData = vec4f(0.0,materialBuffer.rg,0.2);
-    let roughness = materialData.g ;
+    let roughness = getRoughneesFromGBuffer(gBuffer);
     fresnel = (1.0 - roughness) * ssrUniform.reflectionRatio;
-
+    fresnel *= fresnel;
     cameraPosition = vec3<f32>(globalUniform.cameraWorldMatrix[3].xyz);
     rayOrigin = vec3<f32>(worldPosition.xyz);
 
@@ -128,13 +125,13 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     
     reflectionDir = normalize(reflect(rayDirection, normalRandom));
 
-    if(roughness < ssrUniform.roughnessThreshold){
+    if(roughness > 0.0 && roughness < ssrUniform.roughnessThreshold){
       let uvOrigin = vec2<f32>(f32(fragCoordColor.x), f32(fragCoordColor.y));
       let rayMarchPosition = rayOrigin + reflectionDir * 100.0;
       var uvRayMarch = globalUniform.projMat * (globalUniform.viewMat * vec4<f32>(rayMarchPosition, 1.0));
       var uvOffset = (vec2<f32>(uvRayMarch.xy / uvRayMarch.w) + 1.0) * 0.5;
       uvOffset.y = 1.0 - uvOffset.y;
-      uvOffset = uvOffset * vec2<f32>(colorTexSize - 1) - uvOrigin;
+      uvOffset = uvOffset * vec2<f32>(colorTexSize) - uvOrigin;
       uvOffset = normalize(uvOffset);
 
       rayTrace(uvOffset);
@@ -282,17 +279,13 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
           var uv = fromUV + vec2<i32>(i32(offsetFloat32.x), i32(offsetFloat32.y));
           let hitRet = rayInterestScene(uv);
           if(hitRet == 1){
-            // let WN = textureLoad(normalBufferTex, hitData.hitCoord , 0 );
             let gBuffer = getGBuffer(hitData.hitCoord);
-            let normal = getWorldNormalFromGBuffer(gBuffer);// textureLoad(normalBufferTex, hitData.hitCoord , 0 );
-            // if(WN.w > 0.5){
-                // hitData.hitSky = 0;
-            // }
-
-            if(gBuffer.x > -99999.0 ){
-                hitData.hitSky = 0;
+            if(getRoughneesFromGBuffer(gBuffer) >= 0.0){
+              hitData.hitSky = 0;
             }
-            hitData.hitNormal = normalize(vec3<f32>(normal.xyz));
+            
+            let WN = getWorldNormalFromGBuffer(gBuffer);
+            hitData.hitNormal = normalize(WN);
             break;
           }
         }
@@ -303,7 +296,6 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     if(uv.x < 0 || uv.y < 0 || uv.x >= colorTexSize.x || uv.y >= colorTexSize.y){
       return 2;
     }else{
-      // let hitPos = textureLoad(zBufferTexture, uv , 0 );
       let gBuffer = getGBuffer(uv);
       let hitPos = getWorldPositionFromGBuffer(gBuffer , vec2f(uv) / vec2f(colorTexSize) );
       let testDir = normalize(vec3<f32>(hitPos.xyz - rayOrigin));
