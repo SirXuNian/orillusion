@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GBufferPost, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, OutlinePost, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GBufferPost, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, OutlinePost, PointLight, SkinnedMeshRenderer2, SpotLight, TAAPost, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -573,6 +573,17 @@ export class GUIUtil {
         GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
         GUIHelp.add(post, "blendColor");
         GUIHelp.add(post, "multiBounce");
+        GUIHelp.endFolder();
+    }
+
+    public static renderTAA(post: TAAPost, open: boolean = true) {
+        GUIHelp.addFolder("TAA");
+        GUIHelp.add(post, "jitterSeedCount", 2, 8, 1);
+        GUIHelp.add(post, "blendFactor", 0.0, 1.0, 0.01);
+        GUIHelp.add(post, "sharpFactor", 0.1, 0.9, 0.01);
+        GUIHelp.add(post, "sharpPreBlurFactor", 0.1, 0.9, 0.01);
+        GUIHelp.add(post, "temporalJitterScale", 0.0, 1.0, 0.01);
+        open && GUIHelp.open();
         GUIHelp.endFolder();
     }
 

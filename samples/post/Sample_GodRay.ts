@@ -51,7 +51,7 @@ export class Sample_GodRay {
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
 		let godRay = postProcessing.addPost(GodRayPost);
-		postProcessing.addPost(BloomPost);
+		// postProcessing.addPost(BloomPost);
 
 		GUIUtil.renderAtmosphericSky(sky, false);
 		GUIUtil.renderGodRay(godRay);

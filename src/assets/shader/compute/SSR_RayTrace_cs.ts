@@ -75,14 +75,12 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
   @compute @workgroup_size( 8 , 8 , 1 )
   fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
   {
-
-    useNormalMatrixInv();
-
     ssrBufferCoord = vec2<i32>( globalInvocation_id.xy);
     ssrBufferSize = vec2<i32>(i32(ssrUniform.ssrBufferSizeX), i32(ssrUniform.ssrBufferSizeY));
     if(ssrBufferCoord.x >= ssrBufferSize.x || ssrBufferCoord.y >= ssrBufferSize.y){
-        return;
+      return;
     }
+    useNormalMatrixInv();
     coordIndex = ssrBufferCoord.x + ssrBufferCoord.y * ssrBufferSize.x;
 
     colorTexSize = vec2<i32>(i32(ssrUniform.colorMapSizeX), i32(ssrUniform.colorMapSizeY));
