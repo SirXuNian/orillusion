@@ -165,9 +165,15 @@ export let GBufferStand = /* wgsl */ `
         return channel.z;
     }
 
-    fn getIDFromGBuffer(gBuffer:GBuffer) -> f32 {
+    fn getIDFromGBuffer_f32_01(gBuffer:GBuffer) -> f32 {
         let channel = float_to_r22g8(gBuffer.w) ;
         return channel.x;
+    }
+
+    fn getIDFromGBuffer_i32(gBuffer:GBuffer) -> i32 {
+        let id_f32_01 = getIDFromGBuffer_f32_01(gBuffer) ;
+        let id = i32(round(id_f32_01 * f_r22g8.r));
+        return id;
     }
 
     
